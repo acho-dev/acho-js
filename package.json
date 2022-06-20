@@ -1,0 +1,27 @@
+{
+  "name": "acho",
+  "version": "0.0.0",
+  "description": "Acho Javascript SDK",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/unibit_web/acho-js.git"
+  },
+  "author": "Timothy Zhang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://bitbucket.org/unibit_web/acho-js/issues"
+  },
+  "homepage": "https://bitbucket.org/unibit_web/acho-js#readme",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/node": "^18.0.0"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "please-upgrade-node": "^3.2.0"
+  }
+}
