@@ -23,7 +23,7 @@ export class AchoClient {
   constructor(clientOpt: ClientOptions) {
     this.axios = axios;
     this.baseUrl = clientOpt.endpoint;
-    this.authHeader = { Authorization: clientOpt.apiToken! };
+    this.authHeader = { Authorization: `jwt ${clientOpt.apiToken}` };
   }
   async request(options: RequestOptions) {
     const url = this.baseUrl + options.path;
