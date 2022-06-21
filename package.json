@@ -1,5 +1,5 @@
 {
-  "name": "@acho-inc/acho",
+  "name": "@acho-inc/acho-js",
   "version": "1.0.0",
   "description": "Acho Javascript SDK",
   "main": "src/index.ts",
