@@ -11,6 +11,10 @@
     "type": "git",
     "url": "git+ssh://git@bitbucket.org/unibit_web/acho-js.git"
   },
+  "engines": {
+    "node": ">=12.13.0",
+    "npm": ">=6.12.0"
+  },
   "author": "Timothy Zhang",
   "license": "MIT",
   "bugs": {
