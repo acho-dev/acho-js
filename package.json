@@ -2,7 +2,7 @@
   "name": "@acho-inc/acho-js",
   "version": "1.0.2",
   "description": "Acho Javascript SDK",
-  "main": "dist/index.ts",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
