@@ -6,7 +6,7 @@ export interface getTableDataParams {
   resId?: number;
   target?: string;
   pageSize?: number;
-  page: number;
+  page?: number;
 }
 
 export class ResourceEndpoints {
