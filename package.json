@@ -2,10 +2,10 @@
   "name": "@acho-inc/acho-js",
   "version": "1.0.1",
   "description": "Acho Javascript SDK",
-  "main": "src/index.ts",
-  "type": "module",
+  "main": "dist/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
