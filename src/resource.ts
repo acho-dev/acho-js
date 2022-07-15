@@ -5,10 +5,8 @@ export interface getTableDataParams {
   assetId: number;
   resId?: number;
   target?: string;
-  paging?: {
-    pageSize: number;
-    page: number;
-  };
+  page?: number;
+  pageSize?: number;
 }
 
 export class ResourceEndpoints {
