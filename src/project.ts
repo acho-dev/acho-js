@@ -1,7 +1,7 @@
 import { Project, AchoClient } from '.';
 import { ClientOptions } from './types';
 
-export interface getTableDataParams {
+export interface getViewDataParams {
   assetId: number;
   viewId?: number;
   page?: number;
@@ -13,7 +13,7 @@ export class ProjectEndpoints {
   constructor(clientOpt: ClientOptions) {
     this.clientOpt = clientOpt;
   }
-  async getViewData(params: getTableDataParams) {
+  async getViewData(params: getViewDataParams) {
     const client = new AchoClient(this.clientOpt);
     const data = await client.request({
       method: 'post',
