@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import pleaseUpgradeNode from 'please-upgrade-node';
 const packageJson = require('../package.json');
 pleaseUpgradeNode(packageJson);

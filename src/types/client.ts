@@ -2,7 +2,7 @@ import axios, { AxiosStatic } from 'axios';
 
 export interface ClientOptions {
   apiToken?: string;
-  endpoint: string;
+  endpoint?: string;
 }
 
 export interface AuthHeader {
@@ -22,8 +22,8 @@ export class AchoClient {
   private authHeader: AuthHeader;
   constructor(clientOpt: ClientOptions) {
     this.axios = axios;
-    this.baseUrl = clientOpt.endpoint;
-    this.authHeader = { Authorization: `jwt ${clientOpt.apiToken}` };
+    this.baseUrl = process.env.API_ENDPOINT || clientOpt.endpoint || 'localhost';
+    this.authHeader = { Authorization: process.env.API_TOKEN || `jwt ${clientOpt.apiToken}` };
   }
   async request(options: RequestOptions) {
     const url = this.baseUrl + options.path;
