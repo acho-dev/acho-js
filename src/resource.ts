@@ -9,11 +9,20 @@ export interface getTableDataParams {
   pageSize?: number;
 }
 
+export interface syncTableDataParams {
+  resId: number;
+  userId?: number;
+}
+
 export class ResourceEndpoints {
   private clientOpt: ClientOptions;
   constructor(clientOpt: ClientOptions) {
-    this.clientOpt = clientOpt;
+    this.clientOpt = {
+      ...clientOpt,
+      apiToken: process.env.API_TOKEN || clientOpt.apiToken
+    };
   }
+
   async getTableData(params: getTableDataParams) {
     const client = new AchoClient(this.clientOpt);
     const data = await client.request({
@@ -22,6 +31,28 @@ export class ResourceEndpoints {
       path: '/resource/get-data',
       payload: params
     });
+    return data;
+  }
+
+  async syncTableData(params: syncTableDataParams) {
+    const { userId } = params;
+    const { apiToken } = this.clientOpt;
+    if (!userId && apiToken) {
+      const { id } = JSON.parse(Buffer.from(apiToken.split('.')[1], 'base64').toString());
+      params.userId = id;
+      console.log(params);
+    }
+    const client = new AchoClient(this.clientOpt);
+    const data = await client.request({
+      method: 'post',
+      headers: {},
+      path: '/scheduler/run-resource-update',
+      payload: {
+        res_id: params.resId,
+        user_id: params.userId
+      }
+    });
+
     return data;
   }
 }
