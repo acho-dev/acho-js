@@ -8,3 +8,5 @@ export interface View {
   type: string;
   tableId: string;
 }
+
+export interface ProjectHelperInfo {}

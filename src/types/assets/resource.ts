@@ -5,6 +5,11 @@ export interface Resource {
   selection: string;
 }
 
+export interface ResourceHelperInfo {
+  resource: Object;
+  resourceTable: string;
+}
+
 export interface IGetTableDataResp {
   data: Record<string, any>[];
   schema: {
