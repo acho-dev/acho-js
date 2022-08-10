@@ -2,7 +2,7 @@ import { Resource, AchoClient } from '.';
 import { ClientOptions } from './types';
 
 export interface getTableDataParams {
-  assetId: number;
+  assetId?: number;
   resId?: number;
   target?: string;
   page?: number;
