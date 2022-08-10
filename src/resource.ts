@@ -14,6 +14,12 @@ export interface syncTableDataParams {
   userId?: number;
 }
 
+export interface downloadTableDataParams {
+  assetId?: number;
+  resId?: number;
+  target?: number;
+}
+
 export class ResourceEndpoints {
   private clientOpt: ClientOptions;
   constructor(clientOpt: ClientOptions) {
@@ -53,6 +59,17 @@ export class ResourceEndpoints {
       }
     });
 
+    return data;
+  }
+
+  async downloadTableData(params: downloadTableDataParams) {
+    const client = new AchoClient(this.clientOpt);
+    const data = await client.request({
+      method: 'post',
+      headers: {},
+      path: '/resource/download',
+      payload: params
+    });
     return data;
   }
 }
