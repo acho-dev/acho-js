@@ -4,7 +4,7 @@
   "description": "Acho Javascript SDK",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --detect-open-handles",
     "build": "tsc"
   },
   "repository": {
