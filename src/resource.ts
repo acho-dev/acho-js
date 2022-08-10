@@ -1,4 +1,4 @@
-import { Resource, AchoClient } from '.';
+import { Resource, AchoClient, ActionQuery } from '.';
 import { ClientOptions } from './types';
 
 export interface getTableDataParams {
@@ -12,6 +12,10 @@ export interface getTableDataParams {
 export interface syncTableDataParams {
   resId: number;
   userId?: number;
+}
+
+export interface queryTableDataParams {
+  actionQuery: ActionQuery;
 }
 
 export interface downloadTableDataParams {
@@ -71,5 +75,15 @@ export class ResourceEndpoints {
       payload: params
     });
     return data;
+  }
+
+  async queryTableData(params: queryTableDataParams) {
+    const client = new AchoClient(this.clientOpt);
+    const data = await client.request({
+      method: 'post',
+      headers: {},
+      path: '/resource/query',
+      payload: params
+    });
   }
 }
