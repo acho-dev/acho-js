@@ -16,6 +16,10 @@ export interface syncTableDataParams {
 
 export interface queryTableDataParams {
   actionQuery: ActionQuery;
+  page?: number;
+  pageSize?: number;
+  pageToken?: string;
+  jobId?: string;
 }
 
 export interface downloadTableDataParams {
