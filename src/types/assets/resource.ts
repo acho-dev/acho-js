@@ -1,3 +1,4 @@
+// TODO: Resource type not in use, necessary?
 export interface Resource {
   type: string;
   datasetId: string;
@@ -22,4 +23,10 @@ export interface ResourceTableDataResp {
     pageToken?: string;
   };
   jobId?: string;
+}
+
+// TODO: add resource:download response type
+export interface ResourceDownloadResp {
+  url: string;
+  archiveName: string;
 }

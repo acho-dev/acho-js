@@ -1,8 +1,8 @@
-import { Project, AchoClient } from '.';
+import { AchoClient, ProjectTableDataResp } from '.';
 import { ClientOptions } from './types';
 
 export interface getViewDataParams {
-  assetId: number;
+  assetId?: number;
   viewId?: number;
   page?: number;
   pageSize?: number;
@@ -14,8 +14,8 @@ export class ProjectEndpoints {
     this.clientOpt = clientOpt;
   }
   async getViewData(params: getViewDataParams) {
-    const client = new AchoClient(this.clientOpt);
-    const data = await client.request({
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const data: ProjectTableDataResp = await client.request({
       method: 'post',
       headers: {},
       path: '/project/get-view-data',
