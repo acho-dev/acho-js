@@ -1,4 +1,4 @@
-import { Resource, AchoClient, ActionQuery } from '.';
+import { AchoClient, ActionQuery, ResourceTableDataResp } from '.';
 import { ClientOptions } from './types';
 
 export interface getTableDataParams {
@@ -33,13 +33,13 @@ export class ResourceEndpoints {
   constructor(clientOpt: ClientOptions) {
     this.clientOpt = {
       ...clientOpt,
-      apiToken: process.env.API_TOKEN || clientOpt.apiToken
+      apiToken: process.env.TOKEN || clientOpt.apiToken
     };
   }
 
   async getTableData(params: getTableDataParams) {
-    const client = new AchoClient(this.clientOpt);
-    const data = await client.request({
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const data: ResourceTableDataResp = await client.request({
       method: 'post',
       headers: {},
       path: '/resource/get-data',
@@ -56,7 +56,7 @@ export class ResourceEndpoints {
       params.userId = id;
       console.log(params);
     }
-    const client = new AchoClient(this.clientOpt);
+    const client: AchoClient = new AchoClient(this.clientOpt);
     const data = await client.request({
       method: 'post',
       headers: {},
@@ -71,7 +71,7 @@ export class ResourceEndpoints {
   }
 
   async downloadTableData(params: downloadTableDataParams) {
-    const client = new AchoClient(this.clientOpt);
+    const client: AchoClient = new AchoClient(this.clientOpt);
     const data = await client.request({
       method: 'post',
       headers: {},
@@ -82,12 +82,13 @@ export class ResourceEndpoints {
   }
 
   async queryTableData(params: queryTableDataParams) {
-    const client = new AchoClient(this.clientOpt);
-    const data = await client.request({
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const data: ResourceTableDataResp = await client.request({
       method: 'post',
       headers: {},
       path: '/resource/query',
       payload: params
     });
+    return data;
   }
 }

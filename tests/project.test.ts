@@ -1,10 +1,10 @@
 import { Acho } from '../src/index';
 
-describe('test project endpoints', () => {
+describe.skip('test project endpoints', () => {
   // TODO: expose a login endpoint to get token for tests??
   // TODO: what should be the base url for testing? localhost or dev?
   const AchoInstance = new Acho({
-    apiToken: process.env.token,
+    apiToken: process.env.TOKEN,
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
   });
 

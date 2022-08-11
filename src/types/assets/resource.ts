@@ -10,8 +10,8 @@ export interface ResourceHelperInfo {
   resourceTable: string;
 }
 
-export interface IGetTableDataResp {
-  data: Record<string, any>[];
+export interface ResourceTableDataResp {
+  data: Array<Object>;
   schema: {
     fields: Record<string, string>[];
   };
@@ -19,5 +19,7 @@ export interface IGetTableDataResp {
     page: number;
     pageSize: number;
     pageTotal: number;
+    pageToken?: string;
   };
+  jobId?: string;
 }
