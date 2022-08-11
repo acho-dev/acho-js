@@ -228,4 +228,20 @@ describe('test resource:query', () => {
   });
 });
 
-describe('test resource:sync', () => {});
+// NOTE: set resource:sync tests timeout to 60000 to override the default 5000ms timeout
+describe.skip('test resource:sync', () => {
+  const AchoInstance = new Acho({
+    apiToken: process.env.TOKEN,
+    endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
+  });
+
+  test('sync resource table data', async () => {
+    const data = await AchoInstance.ResourceEndpoints.syncTableData({ resId: 4651 });
+    expect(data).toBe('success');
+  }, 60000);
+
+  test('sync resource table data with userId', async () => {
+    const data = await AchoInstance.ResourceEndpoints.syncTableData({ resId: 4651, userId: 5612 });
+    expect(data).toBe('success');
+  }, 60000);
+});

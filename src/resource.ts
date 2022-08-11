@@ -54,7 +54,6 @@ export class ResourceEndpoints {
     if (!userId && apiToken) {
       const { id } = JSON.parse(Buffer.from(apiToken.split('.')[1], 'base64').toString());
       params.userId = id;
-      console.log(params);
     }
     const client: AchoClient = new AchoClient(this.clientOpt);
     const data = await client.request({
