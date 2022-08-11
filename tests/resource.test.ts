@@ -1,7 +1,7 @@
 import { Acho } from '../src/index';
 import { ActionQuery, ResourceTableDataResp } from '../src/types';
 
-describe.skip('test resource:getTableData', () => {
+describe('test resource:getTableData', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
@@ -47,7 +47,7 @@ describe.skip('test resource:getTableData', () => {
   });
 });
 
-describe.skip('test resource:download', () => {
+describe('test resource:download', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
@@ -182,6 +182,49 @@ describe('test resource:query', () => {
     expect(schema).toHaveProperty('fields');
     expect(paging).toHaveProperty('pageToken');
     expect(_data).toEqual(resResp);
+  });
+
+  test('get Airbyte resource table with query and default page size', async () => {
+    actionQuery.query = 'SELECT * FROM {{{R.4651.Sheet1}}};';
+    actionQuery.helperInfo.resources = [
+      {
+        resource: {
+          access_role_id: 1,
+          asset_id: 9249,
+          create_time: 1660239228,
+          id: 4651,
+          is_creator: true,
+          is_private: 0,
+          is_ready: 1,
+          is_scheduled: null,
+          owner_id: 5612,
+          real_type: 'integration',
+          res_display_name: 'Glossary list',
+          res_name: 'integration_5612_Google_Sheets_1660239228',
+          res_type: 'Google_Sheets',
+          scheduler_id: null,
+          team_id: 607,
+          update_frequency: null,
+          update_query: null,
+          update_status: null,
+          user_id: 5612
+        },
+        resourceTable: 'Sheet1'
+      }
+    ];
+
+    const data = await AchoInstance.ResourceEndpoints.queryTableData({ actionQuery });
+    expect(data).toHaveProperty('data');
+    expect(data).toHaveProperty('schema');
+    expect(data).toHaveProperty('paging');
+    expect(data).toHaveProperty('jobId');
+
+    const { data: _data, schema, paging, jobId: _jobId } = data;
+    expect(_data.length).toBeLessThanOrEqual(100); // NOTE: default page size is 100 rows
+    expect(schema).toHaveProperty('fields');
+    // if this is the last page, there won't be a pageToken (a unique string to query the next page)
+    if (_data.length < 100) expect(paging).not.toHaveProperty('pageToken');
+    else expect(paging).toHaveProperty('pageToken');
   });
 });
 
