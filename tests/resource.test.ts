@@ -1,5 +1,6 @@
 import { Acho } from '../src/index';
 import { ActionQuery, ResourceTableDataResp } from '../src/types';
+import { Readable } from 'stream';
 
 describe('test resource:getTableData', () => {
   const AchoInstance = new Acho({
@@ -244,4 +245,19 @@ describe.skip('test resource:sync', () => {
     const data = await AchoInstance.ResourceEndpoints.syncTableData({ resId: 4651, userId: 5612 });
     expect(data).toBe('success');
   }, 60000);
+});
+
+describe.only('test resource:createReadStream', () => {
+  const AchoInstance = new Acho({
+    apiToken: process.env.TOKEN,
+    endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
+  });
+
+  test('create read stream with resId', async () => {
+    // NOTE: This seems to allow Axios to complete its housekeeping and be ready to track new connections opened afterwards
+    // https://stackoverflow.com/questions/69169492/async-external-function-leaves-open-handles-jest-supertest-express
+    await process.nextTick(() => {});
+    const data = await AchoInstance.ResourceEndpoints.createReadStream({ resId: 4650 });
+    expect(data).toBeInstanceOf(Readable);
+  });
 });

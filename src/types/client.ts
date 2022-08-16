@@ -1,4 +1,4 @@
-import axios, { AxiosStatic } from 'axios';
+import axios, { AxiosStatic, ResponseType } from 'axios';
 
 export interface ClientOptions {
   apiToken?: string;
@@ -14,6 +14,7 @@ export interface RequestOptions {
   headers: Record<string, any>;
   path: string;
   payload?: Record<string, any>;
+  responseType?: ResponseType;
 }
 
 export class AchoClient {
@@ -26,15 +27,17 @@ export class AchoClient {
     this.authHeader = { Authorization: `jwt ${process.env.TOKEN || clientOpt.apiToken}` };
   }
   async request(options: RequestOptions) {
-    const url = this.baseUrl + options.path;
+    const { method, headers, path, payload, responseType } = options;
+    const url = this.baseUrl + path;
     const config = {
-      method: options.method,
+      method,
       url,
+      responseType,
       headers: {
-        ...options.headers,
+        ...headers,
         ...this.authHeader
       },
-      data: options.payload
+      data: payload
     };
     const response = await this.axios(config);
     const { data } = response;

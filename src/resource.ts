@@ -28,6 +28,11 @@ export interface downloadTableDataParams {
   target?: number;
 }
 
+export interface createReadStreamParams {
+  resId?: number;
+  assetId?: number;
+}
+
 export class ResourceEndpoints {
   private clientOpt: ClientOptions;
   constructor(clientOpt: ClientOptions) {
@@ -90,4 +95,18 @@ export class ResourceEndpoints {
     });
     return data;
   }
+
+  async createReadStream(params: createReadStreamParams) {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const data = await client.request({
+      method: 'post',
+      headers: {},
+      path: '/resource/create-read-stream',
+      payload: params,
+      responseType: 'stream'
+    });
+    return data;
+  }
+
+  async createWriteStream() {}
 }
