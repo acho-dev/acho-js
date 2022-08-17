@@ -272,9 +272,10 @@ describe.only('test resource:createReadStream', () => {
     // https://stackoverflow.com/questions/69169492/async-external-function-leaves-open-handles-jest-supertest-express
     await process.nextTick(() => {});
     const data = await AchoInstance.ResourceEndpoints.createReadStream({ assetId: 9248 });
-    // data.on('data', (data) => {});
+    let count = 0;
+    data.on('data', () => count++).on('end', () => expect(count).toBe(9994)); // expected value subject to change with the asset
     expect(data).toBeInstanceOf(Readable);
-  });
+  }, 20000);
 
   test('create read stream with an integration resource', async () => {
     // res_type = 'integration'
@@ -283,7 +284,14 @@ describe.only('test resource:createReadStream', () => {
       assetId: 9249,
       tableId: 'Sheet1'
     });
-    // data.on('data', (data) => {});
+    // let count = 0;
+    // data
+    //   .on('data', (data) => {
+    //     count++;
+    //   })
+    //   .on('end', () => {
+    //     console.log(count);
+    //   });
     expect(data).toBeInstanceOf(Readable);
   });
 });

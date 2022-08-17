@@ -123,7 +123,12 @@ export class ResourceEndpoints {
                 this.push(JSON.parse(chunk.toString()));
               }
             })
-            .on('end', () => this.push(null));
+            .on('error', (e: any) => {
+              console.log(e);
+            })
+            .on('end', () => {
+              this.push(null);
+            });
         }
       }
     });
