@@ -258,6 +258,7 @@ describe.only('test resource:createReadStream', () => {
     // https://stackoverflow.com/questions/69169492/async-external-function-leaves-open-handles-jest-supertest-express
     await process.nextTick(() => {});
     const data = await AchoInstance.ResourceEndpoints.createReadStream({ resId: 4650 });
+    // data.on('data', (data) => {});
     expect(data).toBeInstanceOf(Readable);
   });
 });

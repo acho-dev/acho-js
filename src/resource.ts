@@ -1,4 +1,4 @@
-import { AchoClient, ActionQuery, ResourceTableDataResp } from '.';
+import { AchoClient, ActionQuery, ResourceTableDataResp, ResourceReadable } from '.';
 import { ClientOptions } from './types';
 
 export interface getTableDataParams {
@@ -105,7 +105,24 @@ export class ResourceEndpoints {
       payload: params,
       responseType: 'stream'
     });
-    return data;
+    const readableStream: ResourceReadable = new ResourceReadable({
+      readableObjectMode: true,
+      transform(this: ResourceReadable, chunk, encoding, callback) {
+        if (!chunk.toString().endsWith('}')) this.fragment += chunk.toString();
+        else if (!chunk.toString().startsWith('{') && chunk.toString().endsWith('}')) {
+          this.push(JSON.parse(this.fragment + chunk.toString()));
+          this.fragment = '';
+        } else {
+          this.push(JSON.parse(chunk.toString()));
+        }
+        callback();
+      }
+    });
+
+    readableStream.fragment = '';
+    data.pipe(readableStream);
+
+    return readableStream;
   }
 
   async createWriteStream() {}

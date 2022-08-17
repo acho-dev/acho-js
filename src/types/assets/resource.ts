@@ -1,3 +1,4 @@
+import { Transform } from 'stream';
 // TODO: Resource type not in use, necessary?
 export interface Resource {
   type: string;
@@ -29,4 +30,8 @@ export interface ResourceTableDataResp {
 export interface ResourceDownloadResp {
   url: string;
   archiveName: string;
+}
+
+export class ResourceReadable extends Transform {
+  fragment?: string;
 }
