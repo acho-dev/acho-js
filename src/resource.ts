@@ -31,6 +31,9 @@ export interface downloadTableDataParams {
 export interface createReadStreamParams {
   resId?: number;
   assetId?: number;
+  tableId?: string;
+  readOptions?: Object; // TODO: add readOptions
+  snapshotSeconds?: number; // TODO: add snapshotSeconds
 }
 
 export class ResourceEndpoints {
@@ -106,21 +109,27 @@ export class ResourceEndpoints {
       responseType: 'stream'
     });
     const readableStream: ResourceReadable = new ResourceReadable({
-      readableObjectMode: true,
-      transform(this: ResourceReadable, chunk, encoding, callback) {
-        if (!chunk.toString().endsWith('}')) this.fragment += chunk.toString();
-        else if (!chunk.toString().startsWith('{') && chunk.toString().endsWith('}')) {
-          this.push(JSON.parse(this.fragment + chunk.toString()));
-          this.fragment = '';
-        } else {
-          this.push(JSON.parse(chunk.toString()));
+      objectMode: true,
+      read(this: ResourceReadable) {
+        if (!this.isRead) {
+          this.isRead = true;
+          data
+            .on('data', (chunk: Buffer) => {
+              if (!chunk.toString().endsWith('}')) this.fragment += chunk.toString();
+              else if (!chunk.toString().startsWith('{') && chunk.toString().endsWith('}')) {
+                this.push(JSON.parse(this.fragment + chunk.toString()));
+                this.fragment = '';
+              } else {
+                this.push(JSON.parse(chunk.toString()));
+              }
+            })
+            .on('end', () => this.push(null));
         }
-        callback();
       }
     });
 
     readableStream.fragment = '';
-    data.pipe(readableStream);
+    readableStream.isRead = false;
 
     return readableStream;
   }

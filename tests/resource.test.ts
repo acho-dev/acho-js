@@ -257,7 +257,32 @@ describe.only('test resource:createReadStream', () => {
     // NOTE: This seems to allow Axios to complete its housekeeping and be ready to track new connections opened afterwards
     // https://stackoverflow.com/questions/69169492/async-external-function-leaves-open-handles-jest-supertest-express
     await process.nextTick(() => {});
-    const data = await AchoInstance.ResourceEndpoints.createReadStream({ resId: 4650 });
+    const data = await AchoInstance.ResourceEndpoints.createReadStream({ resId: 4676 });
+    // let count = 0;
+    // data
+    //   .on('data', (data) => {
+    //     count++;
+    //   })
+    //   .on('end', () => console.log(count));
+    expect(data).toBeInstanceOf(Readable);
+  });
+
+  test('create read stream with assetId', async () => {
+    // NOTE: This seems to allow Axios to complete its housekeeping and be ready to track new connections opened afterwards
+    // https://stackoverflow.com/questions/69169492/async-external-function-leaves-open-handles-jest-supertest-express
+    await process.nextTick(() => {});
+    const data = await AchoInstance.ResourceEndpoints.createReadStream({ assetId: 9248 });
+    // data.on('data', (data) => {});
+    expect(data).toBeInstanceOf(Readable);
+  });
+
+  test('create read stream with an integration resource', async () => {
+    // res_type = 'integration'
+    await process.nextTick(() => {});
+    const data = await AchoInstance.ResourceEndpoints.createReadStream({
+      assetId: 9249,
+      tableId: 'Sheet1'
+    });
     // data.on('data', (data) => {});
     expect(data).toBeInstanceOf(Readable);
   });
