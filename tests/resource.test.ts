@@ -1,6 +1,10 @@
 import { Acho } from '../src/index';
 import { ActionQuery, ResourceTableDataResp } from '../src/types';
-import { Readable } from 'stream';
+import { pipeline, Readable, Transform } from 'stream';
+import { Writable } from 'stream';
+import fs from 'fs';
+
+jest.setTimeout(300000);
 
 describe('test resource:getTableData', () => {
   const AchoInstance = new Acho({
@@ -257,14 +261,44 @@ describe.only('test resource:createReadStream', () => {
     // NOTE: This seems to allow Axios to complete its housekeeping and be ready to track new connections opened afterwards
     // https://stackoverflow.com/questions/69169492/async-external-function-leaves-open-handles-jest-supertest-express
     await process.nextTick(() => {});
-    const data = await AchoInstance.ResourceEndpoints.createReadStream({ resId: 4676 });
+
+    // TEST pipelining large file
+    const readable = await AchoInstance.ResourceEndpoints.createReadStream({ resId: 4676 });
+    const t = new Transform({
+      objectMode: true, // set this one to true
+      highWaterMark: 5000000,
+      transform(chunk, _, done) {
+        // console.log(chunk);
+        done(null, `${JSON.stringify(chunk)}\n`);
+      }
+    });
+    const writable = fs.createWriteStream('./readstream-test-output', { highWaterMark: 5000000 });
+    await new Promise((resolve, reject) => {
+      pipeline(t, writable, (err) => {
+        if (err) {
+          console.error('Pipeline failed.', err);
+        } else {
+          console.log('Pipeline succeeded.');
+        }
+      });
+      // readable.pipe(t).pipe(writable);
+      readable
+        .on('end', () => {
+          console.log('Written readable stream to file');
+          resolve('finished');
+        })
+        .on('error', (err) => {
+          reject(err);
+        });
+    });
+
     // let count = 0;
     // data
     //   .on('data', (data) => {
     //     count++;
     //   })
     //   .on('end', () => console.log(count));
-    expect(data).toBeInstanceOf(Readable);
+    expect(readable).toBeInstanceOf(Readable);
   });
 
   test('create read stream with assetId', async () => {
