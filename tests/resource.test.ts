@@ -257,13 +257,13 @@ describe.only('test resource:createReadStream', () => {
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
   });
 
-  test('create read stream with resId', async () => {
+  test.only('create read stream with resId', async () => {
     // NOTE: This seems to allow Axios to complete its housekeeping and be ready to track new connections opened afterwards
     // https://stackoverflow.com/questions/69169492/async-external-function-leaves-open-handles-jest-supertest-express
     await process.nextTick(() => {});
 
     // TEST pipelining large file
-    const readable = await AchoInstance.ResourceEndpoints.createReadStream({ resId: 4676 });
+    const readable = await AchoInstance.ResourceEndpoints.createReadStream({ resId: 4650 });
     const t = new Transform({
       objectMode: true, // set this one to true
       highWaterMark: 5000000,
@@ -274,7 +274,8 @@ describe.only('test resource:createReadStream', () => {
     });
     const writable = fs.createWriteStream('./readstream-test-output', { highWaterMark: 5000000 });
     await new Promise((resolve, reject) => {
-      pipeline(t, writable, (err) => {
+      // Using either pipeline() or readable.pipe().pipe() is fine
+      pipeline(readable, t, writable, (err) => {
         if (err) {
           console.error('Pipeline failed.', err);
         } else {
