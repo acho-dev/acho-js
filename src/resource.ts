@@ -32,6 +32,7 @@ export interface createReadStreamParams {
   resId?: number;
   assetId?: number;
   tableId?: string;
+  highWaterMark?: number; // in KiB
   readOptions?: Object; // TODO: add readOptions
   snapshotSeconds?: number; // TODO: add snapshotSeconds
 }
@@ -105,10 +106,13 @@ export class ResourceEndpoints {
       method: 'post',
       headers: {},
       path: '/resource/create-read-stream',
-      payload: params,
+      payload: { ...params, highWaterMark: (params.highWaterMark === undefined ? 32 : params.highWaterMark) * 1024 },
       responseType: 'stream'
     });
     const readableStream: ResourceReadable = new ResourceReadable({
+      // highWaterMark for streams in objectMode indicate "number of object",
+      // otherwise, it means the buffer level in "number of bytes"
+      highWaterMark: params.highWaterMark ? params.highWaterMark : 32,
       objectMode: true,
       read(this: ResourceReadable) {
         if (!this.isRead) {
@@ -121,6 +125,7 @@ export class ResourceEndpoints {
                 this.fragment = '';
               } else {
                 this.push(JSON.parse(chunk.toString()));
+                this.fragment = '';
               }
             })
             .on('error', (e: any) => {

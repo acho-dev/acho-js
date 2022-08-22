@@ -4,8 +4,6 @@ import { pipeline, Readable, Transform } from 'stream';
 import { Writable } from 'stream';
 import fs from 'fs';
 
-jest.setTimeout(300000);
-
 describe('test resource:getTableData', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
@@ -258,21 +256,22 @@ describe.only('test resource:createReadStream', () => {
   });
 
   test.only('create read stream with resId', async () => {
+    const highWaterMark = 50;
     // NOTE: This seems to allow Axios to complete its housekeeping and be ready to track new connections opened afterwards
     // https://stackoverflow.com/questions/69169492/async-external-function-leaves-open-handles-jest-supertest-express
     await process.nextTick(() => {});
-
-    // TEST pipelining large file
-    const readable = await AchoInstance.ResourceEndpoints.createReadStream({ resId: 4650 });
+    const readable = await AchoInstance.ResourceEndpoints.createReadStream({ resId: 4678, highWaterMark });
     const t = new Transform({
-      objectMode: true, // set this one to true
-      highWaterMark: 5000000,
+      writableObjectMode: true, // set this one to true
+      readableObjectMode: false,
+      writableHighWaterMark: highWaterMark,
+      readableHighWaterMark: highWaterMark * 1024,
       transform(chunk, _, done) {
-        // console.log(chunk);
         done(null, `${JSON.stringify(chunk)}\n`);
       }
     });
-    const writable = fs.createWriteStream('./readstream-test-output', { highWaterMark: 5000000 });
+    const writable = fs.createWriteStream('./tests/readstream-test-output');
+
     await new Promise((resolve, reject) => {
       // Using either pipeline() or readable.pipe().pipe() is fine
       pipeline(readable, t, writable, (err) => {
@@ -288,17 +287,29 @@ describe.only('test resource:createReadStream', () => {
           console.log('Written readable stream to file');
           resolve('finished');
         })
-        .on('error', (err) => {
+        .on('error', (err: any) => {
           reject(err);
         });
     });
+    expect(readable).toBeInstanceOf(Readable);
+  });
 
-    // let count = 0;
-    // data
-    //   .on('data', (data) => {
-    //     count++;
-    //   })
-    //   .on('end', () => console.log(count));
+  test('create read stream with a large file', async () => {
+    const highWaterMark = 32;
+    await process.nextTick(() => {});
+    // TEST pipelining large file
+    const readable = await AchoInstance.ResourceEndpoints.createReadStream({ resId: 4676, highWaterMark });
+    let count = 0;
+    readable
+      .on('data', () => {
+        count++;
+      })
+      .on('end', () => {
+        console.log('Written readable stream to file');
+        console.log(count);
+      })
+      .on('error', (err: any) => {});
+
     expect(readable).toBeInstanceOf(Readable);
   });
 
