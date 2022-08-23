@@ -1,4 +1,5 @@
 import axios, { AxiosStatic, ResponseType } from 'axios';
+import { request } from 'http';
 
 export interface ClientOptions {
   apiToken?: string;
@@ -42,5 +43,20 @@ export class AchoClient {
     const response = await this.axios(config);
     const { data } = response;
     return data;
+  }
+
+  httpRequest(options: RequestOptions) {
+    const { method, headers, path } = options;
+    const req = request({
+      host: this.baseUrl.includes('localhost') ? 'localhost' : this.baseUrl,
+      port: this.baseUrl.includes('localhost') ? 8888 : 80,
+      path,
+      method,
+      headers: {
+        ...headers,
+        ...this.authHeader
+      }
+    });
+    return req;
   }
 }

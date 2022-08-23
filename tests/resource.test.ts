@@ -249,13 +249,13 @@ describe.skip('test resource:sync', () => {
   }, 60000);
 });
 
-describe.only('test resource:createReadStream', () => {
+describe('test resource:createReadStream', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
   });
 
-  test.only('create read stream with resId', async () => {
+  test('create read stream with resId', async () => {
     const highWaterMark = 50;
     // NOTE: This seems to allow Axios to complete its housekeeping and be ready to track new connections opened afterwards
     // https://stackoverflow.com/questions/69169492/async-external-function-leaves-open-handles-jest-supertest-express
@@ -339,5 +339,31 @@ describe.only('test resource:createReadStream', () => {
     //     console.log(count);
     //   });
     expect(data).toBeInstanceOf(Readable);
+  });
+});
+
+describe.only('test resource:createWriteStream', () => {
+  const AchoInstance = new Acho({
+    apiToken: process.env.TOKEN,
+    endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
+  });
+
+  test('', async () => {
+    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679 });
+    for (let i = 0; i < 1; i++) {
+      httpRequest.write(
+        JSON.stringify({
+          Name: 'Test1',
+          Duration: Date.now(),
+          Start_time: '2020-07-06T13:50:03',
+          End_time: '2020-07-06T13:50:03'
+        })
+      );
+    }
+
+    httpRequest.end();
+    httpRequest.on('response', (res) => {
+      console.log(res.statusCode);
+    });
   });
 });

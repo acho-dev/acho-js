@@ -1,3 +1,4 @@
+import { ClientRequest } from 'http';
 import { AchoClient, ActionQuery, ResourceTableDataResp, ResourceReadable } from '.';
 import { ClientOptions } from './types';
 
@@ -33,8 +34,14 @@ export interface createReadStreamParams {
   assetId?: number;
   tableId?: string;
   highWaterMark?: number; // in KiB
-  readOptions?: Object; // TODO: add readOptions
-  snapshotSeconds?: number; // TODO: add snapshotSeconds
+  readOptions?: Object;
+  snapshotSeconds?: number;
+  dataType?: 'json' | 'buffer';
+}
+
+export interface createWriteStreamParams {
+  resId?: number;
+  assetId?: number;
 }
 
 export class ResourceEndpoints {
@@ -125,7 +132,7 @@ export class ResourceEndpoints {
                 this.fragment = '';
               } else {
                 this.push(JSON.parse(chunk.toString()));
-                this.fragment = '';
+                // this.fragment = '';
               }
             })
             .on('error', (e: any) => {
@@ -141,8 +148,16 @@ export class ResourceEndpoints {
     readableStream.fragment = '';
     readableStream.isRead = false;
 
-    return readableStream;
+    return params.dataType === 'buffer' ? data : readableStream;
   }
 
-  async createWriteStream() {}
+  createWriteStream(params: createWriteStreamParams) {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const httpRequest: ClientRequest = client.httpRequest({
+      method: 'post',
+      headers: {},
+      path: `/resource/create-write-stream/${params.resId}`
+    });
+    return httpRequest;
+  }
 }
