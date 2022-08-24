@@ -270,7 +270,7 @@ describe('test resource:createReadStream', () => {
         done(null, `${JSON.stringify(chunk)}\n`);
       }
     });
-    const writable = fs.createWriteStream('./tests/readstream-test-output');
+    const writable = fs.createWriteStream('./tests/data/readstream-test-output');
 
     await new Promise((resolve, reject) => {
       // Using either pipeline() or readable.pipe().pipe() is fine
@@ -386,11 +386,11 @@ describe.only('test resource:createWriteStream', () => {
     expect(httpRequest).toBeInstanceOf(ClientRequest);
   });
 
-  test.skip('insert rows with assetId and json file', async () => {
+  test('insert rows with assetId and json file', async () => {
     const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'json' });
     await new Promise((resolve) => {
       // NOTE: json should be in newline-delimited format
-      fs.createReadStream('./tests/res_4679_data.ndjson').pipe(httpRequest);
+      fs.createReadStream('./tests/data/res_4679_data.ndjson').pipe(httpRequest);
       httpRequest.on('response', (res) => {
         expect(res.statusCode).toBe(200);
         resolve('done');
@@ -403,7 +403,7 @@ describe.only('test resource:createWriteStream', () => {
     const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'csv', includeHeader: true });
     await new Promise((resolve) => {
       // NOTE: json should be in newline-delimited format
-      fs.createReadStream('./tests/res_4679_data.csv').pipe(httpRequest);
+      fs.createReadStream('./tests/data/res_4679_data.csv').pipe(httpRequest);
       httpRequest.on('response', (res) => {
         expect(res.statusCode).toBe(200);
         resolve('done');
