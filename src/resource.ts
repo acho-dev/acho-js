@@ -1,11 +1,19 @@
 import { ClientRequest } from 'http';
-import { AchoClient, ActionQuery, ResourceTableDataResp, ResourceReadable } from '.';
+import {
+  AchoClient,
+  ActionQuery,
+  ResourceTableDataResp,
+  ResourceTableSchemaResp,
+  ResourceDownloadResp,
+  ResourceReadable
+} from '.';
 import { ClientOptions } from './types';
+import { Readable } from 'stream';
 
 export interface getTableDataParams {
   assetId?: number;
   resId?: number;
-  target?: string;
+  target?: string; // TODO: unify param name
   page?: number;
   pageSize?: number;
 }
@@ -26,7 +34,13 @@ export interface queryTableDataParams {
 export interface downloadTableDataParams {
   assetId?: number;
   resId?: number;
-  target?: number;
+  target?: number; // TODO: unify param name
+}
+
+export interface getTableSchemaParams {
+  resId?: number;
+  assetId?: number;
+  tableId?: string;
 }
 
 export interface createReadStreamParams {
@@ -40,8 +54,11 @@ export interface createReadStreamParams {
 }
 
 export interface createWriteStreamParams {
+  dataType: 'json' | 'csv';
   resId?: number;
   assetId?: number;
+  tableId?: string;
+  includeHeader?: boolean;
 }
 
 export class ResourceEndpoints {
@@ -87,7 +104,7 @@ export class ResourceEndpoints {
 
   async downloadTableData(params: downloadTableDataParams) {
     const client: AchoClient = new AchoClient(this.clientOpt);
-    const data = await client.request({
+    const data: ResourceDownloadResp = await client.request({
       method: 'post',
       headers: {},
       path: '/resource/download',
@@ -107,9 +124,20 @@ export class ResourceEndpoints {
     return data;
   }
 
+  async getTableSchema(params: getTableSchemaParams) {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const data: ResourceTableSchemaResp = await client.request({
+      method: 'post',
+      headers: {},
+      path: '/resource/get-table-schema',
+      payload: params
+    });
+    return data;
+  }
+
   async createReadStream(params: createReadStreamParams) {
     const client: AchoClient = new AchoClient(this.clientOpt);
-    const data = await client.request({
+    const data: Readable = await client.request({
       method: 'post',
       headers: {},
       path: '/resource/create-read-stream',
@@ -156,8 +184,9 @@ export class ResourceEndpoints {
     const httpRequest: ClientRequest = client.httpRequest({
       method: 'post',
       headers: {},
-      path: `/resource/create-write-stream/${params.resId}`
+      path: `/resource/create-write-stream`
     });
+    httpRequest.write(JSON.stringify({ body: params }));
     return httpRequest;
   }
 }

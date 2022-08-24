@@ -1,8 +1,8 @@
 import { Acho } from '../src/index';
 import { ActionQuery, ResourceTableDataResp } from '../src/types';
 import { pipeline, Readable, Transform } from 'stream';
-import { Writable } from 'stream';
 import fs from 'fs';
+import { ClientRequest } from 'http';
 
 describe('test resource:getTableData', () => {
   const AchoInstance = new Acho({
@@ -348,22 +348,67 @@ describe.only('test resource:createWriteStream', () => {
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
   });
 
-  test('', async () => {
-    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679 });
-    for (let i = 0; i < 1; i++) {
-      httpRequest.write(
-        JSON.stringify({
-          Name: 'Test1',
-          Duration: Date.now(),
-          Start_time: '2020-07-06T13:50:03',
-          End_time: '2020-07-06T13:50:03'
-        })
-      );
-    }
-
-    httpRequest.end();
-    httpRequest.on('response', (res) => {
-      console.log(res.statusCode);
+  test.skip('insert rows with resId and csv string', async () => {
+    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679, dataType: 'csv', includeHeader: false });
+    // TODO: do we have to remove the rows added by test?
+    await new Promise((resolve) => {
+      for (let i = 0; i < 10; i++) {
+        httpRequest.write(`Test_${Date.now()},5000,2020-07-06T13:50:03,2020-07-06T13:50:03\n`);
+      }
+      httpRequest.end();
+      httpRequest.on('response', (res) => {
+        expect(res.statusCode).toBe(200);
+        resolve('done');
+      });
     });
+    expect(httpRequest).toBeInstanceOf(ClientRequest);
+  });
+
+  test.skip('insert rows with resId and json string', async () => {
+    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679, dataType: 'json' });
+    await new Promise((resolve) => {
+      for (let i = 0; i < 5; i++) {
+        httpRequest.write(
+          JSON.stringify({
+            Name: `JSON_${Date.now()}`,
+            Duration: 5000,
+            Start_time: '2020-07-06T13:50:03',
+            End_time: '2020-07-06T13:50:03'
+          }) + '\n'
+        );
+      }
+      httpRequest.end();
+      httpRequest.on('response', (res) => {
+        expect(res.statusCode).toBe(200);
+        resolve('done');
+      });
+    });
+    expect(httpRequest).toBeInstanceOf(ClientRequest);
+  });
+
+  test.skip('insert rows with assetId and json file', async () => {
+    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'json' });
+    await new Promise((resolve) => {
+      // NOTE: json should be in newline-delimited format
+      fs.createReadStream('./tests/res_4679_data.ndjson').pipe(httpRequest);
+      httpRequest.on('response', (res) => {
+        expect(res.statusCode).toBe(200);
+        resolve('done');
+      });
+    });
+    expect(httpRequest).toBeInstanceOf(ClientRequest);
+  });
+
+  test('insert rows with assetId and csv file', async () => {
+    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'csv', includeHeader: true });
+    await new Promise((resolve) => {
+      // NOTE: json should be in newline-delimited format
+      fs.createReadStream('./tests/res_4679_data.csv').pipe(httpRequest);
+      httpRequest.on('response', (res) => {
+        expect(res.statusCode).toBe(200);
+        resolve('done');
+      });
+    });
+    expect(httpRequest).toBeInstanceOf(ClientRequest);
   });
 });

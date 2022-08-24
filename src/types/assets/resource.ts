@@ -1,22 +1,21 @@
 import { Readable } from 'stream';
-// TODO: Resource type not in use, necessary?
-export interface Resource {
-  type: string;
-  datasetId: string;
-  tableId: string[];
-  selection: string;
-}
 
 export interface ResourceHelperInfo {
   resource: Object;
   resourceTable: string;
 }
 
+export class ResourceReadable extends Readable {
+  fragment?: string;
+  isRead?: boolean;
+}
+
+/**
+ * Resource response types
+ */
 export interface ResourceTableDataResp {
   data: Array<Object>;
-  schema: {
-    fields: Record<string, string>[];
-  };
+  schema: ResourceTableSchemaResp;
   paging: {
     page: number;
     pageSize: number;
@@ -26,13 +25,13 @@ export interface ResourceTableDataResp {
   jobId?: string;
 }
 
-// TODO: add resource:download response type
+export interface ResourceTableSchemaResp {
+  fields: Record<string, string>[];
+}
+
+// TODO: add resource:sync response type
+
 export interface ResourceDownloadResp {
   url: string;
   archiveName: string;
-}
-
-export class ResourceReadable extends Readable {
-  fragment?: string;
-  isRead?: boolean;
 }
