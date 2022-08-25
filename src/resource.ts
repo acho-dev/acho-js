@@ -58,7 +58,8 @@ export interface createWriteStreamParams {
   resId?: number;
   assetId?: number;
   tableId?: string;
-  includeHeader?: boolean;
+  hasHeader?: boolean;
+  maxWaitTime?: number; // in milliseconds
 }
 
 export class ResourceEndpoints {

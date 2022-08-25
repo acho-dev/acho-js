@@ -4,7 +4,7 @@ import { pipeline, Readable, Transform } from 'stream';
 import fs from 'fs';
 import { ClientRequest } from 'http';
 
-describe('test resource:getTableData', () => {
+describe.skip('test resource:getTableData', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
@@ -50,7 +50,7 @@ describe('test resource:getTableData', () => {
   });
 });
 
-describe('test resource:download', () => {
+describe.skip('test resource:download', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
@@ -94,7 +94,7 @@ describe('test resource:download', () => {
   });
 });
 
-describe('test resource:query', () => {
+describe.skip('test resource:query', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
@@ -249,7 +249,7 @@ describe.skip('test resource:sync', () => {
   }, 60000);
 });
 
-describe('test resource:createReadStream', () => {
+describe.skip('test resource:createReadStream', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
@@ -342,14 +342,14 @@ describe('test resource:createReadStream', () => {
   });
 });
 
-describe.only('test resource:createWriteStream', () => {
+describe('test resource:createWriteStream', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
   });
 
-  test.skip('insert rows with resId and csv string', async () => {
-    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679, dataType: 'csv', includeHeader: false });
+  test('insert rows with resId and csv string', async () => {
+    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679, dataType: 'csv', hasHeader: false });
     // TODO: do we have to remove the rows added by test?
     await new Promise((resolve) => {
       for (let i = 0; i < 10; i++) {
@@ -357,6 +357,7 @@ describe.only('test resource:createWriteStream', () => {
       }
       httpRequest.end();
       httpRequest.on('response', (res) => {
+        res.on('data', (data) => console.log(JSON.parse(data.toString())));
         expect(res.statusCode).toBe(200);
         resolve('done');
       });
@@ -364,7 +365,7 @@ describe.only('test resource:createWriteStream', () => {
     expect(httpRequest).toBeInstanceOf(ClientRequest);
   });
 
-  test.skip('insert rows with resId and json string', async () => {
+  test('insert rows with resId and json string', async () => {
     const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679, dataType: 'json' });
     await new Promise((resolve) => {
       for (let i = 0; i < 5; i++) {
@@ -386,7 +387,7 @@ describe.only('test resource:createWriteStream', () => {
     expect(httpRequest).toBeInstanceOf(ClientRequest);
   });
 
-  test('insert rows with assetId and json file', async () => {
+  test.skip('insert rows with assetId and json file', async () => {
     const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'json' });
     await new Promise((resolve) => {
       // NOTE: json should be in newline-delimited format
@@ -399,11 +400,50 @@ describe.only('test resource:createWriteStream', () => {
     expect(httpRequest).toBeInstanceOf(ClientRequest);
   });
 
-  test('insert rows with assetId and csv file', async () => {
-    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'csv', includeHeader: true });
+  test.skip('insert rows with assetId and csv file', async () => {
+    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'csv', hasHeader: true });
     await new Promise((resolve) => {
       // NOTE: json should be in newline-delimited format
       fs.createReadStream('./tests/data/res_4679_data.csv').pipe(httpRequest);
+      httpRequest.on('response', (res) => {
+        expect(res.statusCode).toBe(200);
+        resolve('done');
+      });
+    });
+    expect(httpRequest).toBeInstanceOf(ClientRequest);
+  });
+
+  test.skip('error handling - insert rows with invalid data type', async () => {
+    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679, dataType: 'csv', hasHeader: false });
+    await new Promise((resolve) => {
+      httpRequest.write(`CSV_${Date.now()},AAA,2020-07-06T13:50:03,2020-07-06T13:50:03\n`);
+      httpRequest.end();
+      httpRequest.on('response', (res) => {
+        expect(res.statusCode).toBe(400);
+        resolve('done');
+      });
+    });
+    expect(httpRequest).toBeInstanceOf(ClientRequest);
+  });
+
+  test.skip('error handling - insert rows with invalid data format', async () => {
+    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679, dataType: 'csv', hasHeader: false });
+    await new Promise((resolve) => {
+      httpRequest.write(`CSV_${Date.now()},5000,2020-07-06T13:50:03,2020-07-06T13:50:03,aaaa\n`);
+      httpRequest.end();
+      httpRequest.on('response', (res) => {
+        expect(res.statusCode).toBe(400);
+        resolve('done');
+      });
+    });
+    expect(httpRequest).toBeInstanceOf(ClientRequest);
+  });
+
+  test.skip('insert rows with with large files', async () => {
+    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'json', maxWaitTime: 5000 });
+    await new Promise((resolve) => {
+      // NOTE: json should be in newline-delimited format
+      fs.createReadStream('./tests/data/res_4679_data_big').pipe(httpRequest);
       httpRequest.on('response', (res) => {
         expect(res.statusCode).toBe(200);
         resolve('done');
