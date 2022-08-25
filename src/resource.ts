@@ -13,7 +13,7 @@ import { Readable } from 'stream';
 export interface getTableDataParams {
   assetId?: number;
   resId?: number;
-  target?: string; // TODO: unify param name
+  tableId?: string;
   page?: number;
   pageSize?: number;
 }
@@ -34,7 +34,7 @@ export interface queryTableDataParams {
 export interface downloadTableDataParams {
   assetId?: number;
   resId?: number;
-  target?: number; // TODO: unify param name
+  tableId?: number;
 }
 
 export interface getTableSchemaParams {
@@ -71,6 +71,16 @@ export class ResourceEndpoints {
     };
   }
 
+  /**
+   * Get resource table by page
+   * @param {getTableDataParams} params
+   * @param {number} params.assetId - either provide a assetId or a resId
+   * @param {number} params.resId - either provide a assetId or a resId
+   * @param {string} params.tableId - when the resource is of type "integration", a tableId is required
+   * @param {number} params.page - the page of paged data
+   * @param {pageSize} params.pageSize - how many rows should be in one data page
+   * @returns {ResourceTableDataResp}
+   */
   async getTableData(params: getTableDataParams) {
     const client: AchoClient = new AchoClient(this.clientOpt);
     const data: ResourceTableDataResp = await client.request({
@@ -82,6 +92,11 @@ export class ResourceEndpoints {
     return data;
   }
 
+  /**
+   * Sync resource data
+   * @param {syncTableDataParams} params
+   * @returns {}
+   */
   async syncTableData(params: syncTableDataParams) {
     const { userId } = params;
     const { apiToken } = this.clientOpt;
@@ -90,6 +105,7 @@ export class ResourceEndpoints {
       params.userId = id;
     }
     const client: AchoClient = new AchoClient(this.clientOpt);
+    // TODO: add response type
     const data = await client.request({
       method: 'post',
       headers: {},
@@ -103,6 +119,11 @@ export class ResourceEndpoints {
     return data;
   }
 
+  /**
+   * Download resource table data
+   * @param {downloadTableDataParams} params
+   * @returns {ResourceTableDataResp}
+   */
   async downloadTableData(params: downloadTableDataParams) {
     const client: AchoClient = new AchoClient(this.clientOpt);
     const data: ResourceDownloadResp = await client.request({
@@ -114,6 +135,15 @@ export class ResourceEndpoints {
     return data;
   }
 
+  /**
+   * Query resource table data
+   * @param {queryTableDataParams} params
+   * @param {ActionQuery} params.actionQuery - (required) the query and the helper info to query a resource table
+   * @param {number} params.page - the page of paged data
+   * @param {pageSize} params.pageSize - how many rows should be in one data page
+   * @param {string} params.jobId - required if you want to query other pages with the same actionQuery
+   * @returns {ResourceTableDataResp}
+   */
   async queryTableData(params: queryTableDataParams) {
     const client: AchoClient = new AchoClient(this.clientOpt);
     const data: ResourceTableDataResp = await client.request({
@@ -125,6 +155,14 @@ export class ResourceEndpoints {
     return data;
   }
 
+  /**
+   * Get the resource table schema
+   * @param {getTableSchemaParams} params
+   * @param {number} params.assetId - either provide a assetId or a resId
+   * @param {number} params.resId - either provide a assetId or a resId
+   * @param {string} params.tableId - when the resource is of type "integration", a tableId is required
+   * @returns {ResourceTableSchemaResp}
+   */
   async getTableSchema(params: getTableSchemaParams) {
     const client: AchoClient = new AchoClient(this.clientOpt);
     const data: ResourceTableSchemaResp = await client.request({
@@ -136,6 +174,18 @@ export class ResourceEndpoints {
     return data;
   }
 
+  /**
+   * Create a readable stream to read data from a resource table
+   * @param {createReadStreamParams} params
+   * @param {number} params.assetId - either provide a assetId or a resId
+   * @param {number} params.resId - either provide a assetId or a resId
+   * @param {string} params.tableId - when the resource is of type "integration", a tableId is required
+   * @param {number} params.highWaterMark - in KiB, default to 16384 KiB or 16 objects if the stream is in object mode
+   * @param {Object} params.readOptions - https://googleapis.dev/nodejs/bigquerystorage/2.7.0/google.cloud.bigquery.storage.v1.ReadSession.ITableReadOptions.html
+   * @param {number} params.snapshotSeconds - https://googleapis.dev/nodejs/bigquerystorage/2.7.0/google.cloud.bigquery.storage.v1.ReadSession.ITableModifiers.html
+   * @param {dataType} params.dataType - when set to json, the data streamed from the returned readable stream is of JSON type, otherwise, buffer
+   * @returns
+   */
   async createReadStream(params: createReadStreamParams) {
     const client: AchoClient = new AchoClient(this.clientOpt);
     const data: Readable = await client.request({
@@ -180,6 +230,17 @@ export class ResourceEndpoints {
     return params.dataType === 'buffer' ? data : readableStream;
   }
 
+  /**
+   * Create a writable stream to write data to a resource table
+   * @param params
+   * @param {string} params.dataType - specify the input data type, json or csv
+   * @param {number} params.assetId - either provide a assetId or a resId
+   * @param {number} params.resId - either provide a assetId or a resId
+   * @param {string} params.tableId - when the resource is of type "integration", a tableId is required
+   * @param {string} params.hasHeader - indicate whether the input csv data includes the header
+   * @param {number} params.maxWaitTime - the maximum time in milliseconds to wait from the write job to complete, default to 60000 milliseconds
+   * @returns
+   */
   createWriteStream(params: createWriteStreamParams) {
     const client: AchoClient = new AchoClient(this.clientOpt);
     const httpRequest: ClientRequest = client.httpRequest({
