@@ -48,10 +48,10 @@ export class AchoClient {
 
   httpRequest(options: RequestOptions) {
     const { method, headers, path } = options;
-
     const urlObj = url.parse(this.baseUrl);
-    const req = request({
-      host: urlObj.host,
+
+    const reqOptions = {
+      host: urlObj.hostname,
       port: urlObj.port,
       path,
       method,
@@ -59,7 +59,8 @@ export class AchoClient {
         ...headers,
         ...this.authHeader
       }
-    });
+    };
+    const req = request(reqOptions);
     return req;
   }
 }
