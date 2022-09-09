@@ -26,7 +26,7 @@ export class AchoClient {
   constructor(clientOpt: ClientOptions) {
     this.axios = axios;
     this.baseUrl = process.env.API_ENDPOINT || clientOpt.endpoint || 'http://localhost:8888';
-    this.authHeader = { Authorization: `jwt ${process.env.TOKEN || clientOpt.apiToken}` };
+    this.authHeader = { Authorization: `jwt ${clientOpt.apiToken || process.env.TOKEN}` };
   }
   async request(options: RequestOptions) {
     const { method, headers, path, payload, responseType } = options;
@@ -60,6 +60,7 @@ export class AchoClient {
         ...this.authHeader
       }
     };
+    console.log(reqOptions);
     const req = request(reqOptions);
     return req;
   }

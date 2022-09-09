@@ -387,7 +387,7 @@ describe('test resource:createWriteStream', () => {
     expect(httpRequest).toBeInstanceOf(ClientRequest);
   });
 
-  test.skip('insert rows with assetId and json file', async () => {
+  test('insert rows with assetId and json file', async () => {
     const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'json' });
     await new Promise((resolve) => {
       // NOTE: json should be in newline-delimited format
@@ -400,7 +400,27 @@ describe('test resource:createWriteStream', () => {
     expect(httpRequest).toBeInstanceOf(ClientRequest);
   });
 
-  test.skip('insert rows with assetId and csv file', async () => {
+  test('error handling - wrong credential', async () => {
+    const opts = {
+      apiToken: 'xxxxxxxx',
+      endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
+    };
+    const AchoInstanceNoAuth = new Acho(opts);
+
+    const httpRequest = AchoInstanceNoAuth.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'json' });
+    httpRequest.on('error', (err) => {});
+    await new Promise((resolve) => {
+      // NOTE: json should be in newline-delimited format
+      fs.createReadStream('./tests/data/res_4679_data.ndjson').pipe(httpRequest);
+      httpRequest.on('response', (res) => {
+        expect(res.statusCode).toBe(401);
+        resolve('done');
+      });
+    });
+    expect(httpRequest).toBeInstanceOf(ClientRequest);
+  });
+
+  test('insert rows with assetId and csv file', async () => {
     const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'csv', hasHeader: true });
     await new Promise((resolve) => {
       // NOTE: json should be in newline-delimited format
@@ -413,7 +433,7 @@ describe('test resource:createWriteStream', () => {
     expect(httpRequest).toBeInstanceOf(ClientRequest);
   });
 
-  test.skip('error handling - insert rows with invalid data type', async () => {
+  test('error handling - insert rows with invalid data type', async () => {
     const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679, dataType: 'csv', hasHeader: false });
     await new Promise((resolve) => {
       httpRequest.write(`CSV_${Date.now()},AAA,2020-07-06T13:50:03,2020-07-06T13:50:03\n`);
@@ -422,11 +442,14 @@ describe('test resource:createWriteStream', () => {
         expect(res.statusCode).toBe(400);
         resolve('done');
       });
+      httpRequest.on('error', (error) => {
+        resolve('done');
+      });
     });
     expect(httpRequest).toBeInstanceOf(ClientRequest);
   });
 
-  test.skip('error handling - insert rows with invalid data format', async () => {
+  test('error handling - insert rows with invalid data format', async () => {
     const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679, dataType: 'csv', hasHeader: false });
     await new Promise((resolve) => {
       httpRequest.write(`CSV_${Date.now()},5000,2020-07-06T13:50:03,2020-07-06T13:50:03,aaaa\n`);
@@ -435,11 +458,14 @@ describe('test resource:createWriteStream', () => {
         expect(res.statusCode).toBe(400);
         resolve('done');
       });
+      httpRequest.on('error', (error) => {
+        resolve('done');
+      });
     });
     expect(httpRequest).toBeInstanceOf(ClientRequest);
   });
 
-  test.skip('insert rows with with large files', async () => {
+  test('insert rows with with large files', async () => {
     const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'json', maxWaitTime: 5000 });
     await new Promise((resolve) => {
       // NOTE: json should be in newline-delimited format

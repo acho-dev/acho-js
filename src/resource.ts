@@ -9,6 +9,7 @@ import {
 } from '.';
 import { ClientOptions } from './types';
 import { Readable } from 'stream';
+import createError from 'http-errors';
 
 export interface getTableDataParams {
   assetId?: number;
@@ -67,7 +68,7 @@ export class ResourceEndpoints {
   constructor(clientOpt: ClientOptions) {
     this.clientOpt = {
       ...clientOpt,
-      apiToken: process.env.TOKEN || clientOpt.apiToken
+      apiToken: clientOpt.apiToken || process.env.TOKEN
     };
   }
 
@@ -249,6 +250,21 @@ export class ResourceEndpoints {
       path: `/resource/create-write-stream`
     });
     httpRequest.write(JSON.stringify({ body: params }));
+    httpRequest.once('response', (resp) => {
+      if (resp?.statusCode) {
+        if (resp.statusCode >= 400) {
+          if (resp.statusCode === 401) {
+            httpRequest.emit('error', createError(resp.statusCode, 'Unauthorized'));
+          } else if (resp.statusCode === 403) {
+            httpRequest.emit('error', createError(resp.statusCode, 'Access denied'));
+          } else {
+            httpRequest.emit('error', createError(resp.statusCode, 'Error'));
+          }
+        }
+      } else {
+        httpRequest.emit('error', Error('Unknown'));
+      }
+    });
     return httpRequest;
   }
 }
