@@ -60,7 +60,6 @@ export class AchoClient {
         ...this.authHeader
       }
     };
-    console.log(reqOptions);
     const req = request(reqOptions);
     return req;
   }
