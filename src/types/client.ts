@@ -1,5 +1,6 @@
 import axios, { AxiosStatic, ResponseType } from 'axios';
 import { request } from 'http';
+import url from 'url';
 
 export interface ClientOptions {
   apiToken?: string;
@@ -47,9 +48,11 @@ export class AchoClient {
 
   httpRequest(options: RequestOptions) {
     const { method, headers, path } = options;
+
+    const urlObj = url.parse(this.baseUrl);
     const req = request({
-      host: this.baseUrl.includes('localhost') ? 'localhost' : this.baseUrl,
-      port: this.baseUrl.includes('localhost') ? 8888 : 80,
+      host: urlObj.host,
+      port: urlObj.port,
       path,
       method,
       headers: {
