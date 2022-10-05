@@ -465,7 +465,7 @@ describe('test resource:createWriteStream', () => {
     expect(httpRequest).toBeInstanceOf(ClientRequest);
   });
 
-  test('insert rows with with large files', async () => {
+  test.skip('insert rows with with large files', async () => {
     const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'json', maxWaitTime: 5000 });
     await new Promise((resolve) => {
       // NOTE: json should be in newline-delimited format

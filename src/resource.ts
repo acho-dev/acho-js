@@ -35,7 +35,8 @@ export interface queryTableDataParams {
 export interface downloadTableDataParams {
   assetId?: number;
   resId?: number;
-  tableId?: number;
+  tableId?: string;
+  format?: string;
 }
 
 export interface getTableSchemaParams {
