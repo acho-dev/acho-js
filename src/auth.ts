@@ -34,14 +34,18 @@ export class OAuthEndpoints {
     return data;
   }
 
-  async getOAuthClient(params: IGetOAuthClientParams) {
+  async getOAuthToken(params: IGetOAuthClientParams) {
     const client: AchoClient = new AchoClient(this.clientOpt);
-    const data: IOAuthClient = await client.request({
-      method: 'get',
-      headers: {},
-      path: `/auth/oauth/client/${params.id}/token`,
-      payload: params
-    });
-    return data;
+    try {
+      const data: string = await client.request({
+        method: 'get',
+        headers: {},
+        path: `/auth/oauth/client/${params.id}/token`
+      });
+      return data;
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
   }
 }

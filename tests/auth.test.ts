@@ -12,9 +12,9 @@ describe('test OAuth endpoints', () => {
     console.log(data);
   });
 
-  it.skip('get oauth token', async () => {
-    const data = await AchoInstance.OAuthEndpoints.getOAuthClient({ id: 'bedcf896-0bc6-4c29-9ac7-2f4d8007725a' });
-    expect(data).toBeInstanceOf(Object);
+  it('get oauth token', async () => {
+    const data = await AchoInstance.OAuthEndpoints.getOAuthToken({ id: '4ee0dbf0-92ce-48e1-b5c1-b9248217041a' });
+    expect(typeof data).toBe('string');
     console.log(data);
   });
 });
