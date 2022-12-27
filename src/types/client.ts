@@ -1,5 +1,6 @@
 import axios, { AxiosStatic, ResponseType } from 'axios';
 import { request } from 'http';
+import createHttpError from 'http-errors';
 import url from 'url';
 
 export interface ClientOptions {
@@ -25,25 +26,40 @@ export class AchoClient {
   private authHeader: AuthHeader;
   constructor(clientOpt: ClientOptions) {
     this.axios = axios;
-    this.baseUrl = process.env.API_ENDPOINT || clientOpt.endpoint || 'http://localhost:8888';
+    this.baseUrl = clientOpt.endpoint || process.env.API_ENDPOINT || 'http://localhost:8888';
     this.authHeader = { Authorization: `jwt ${clientOpt.apiToken || process.env.TOKEN}` };
   }
   async request(options: RequestOptions) {
     const { method, headers, path, payload, responseType } = options;
-    const url = this.baseUrl + path;
-    const config = {
-      method,
-      url,
-      responseType,
-      headers: {
-        ...headers,
-        ...this.authHeader
-      },
-      data: payload
-    };
-    const response = await this.axios(config);
-    const { data } = response;
-    return data;
+    try {
+      const url = this.baseUrl + path;
+      const config = {
+        method,
+        url,
+        responseType,
+        headers: {
+          ...headers,
+          ...this.authHeader
+        },
+        data: payload
+      };
+      const response = await this.axios(config).catch((error) => {
+        if (error.response) {
+          throw createHttpError(error.response.status, error.response.data);
+        } else if (error.request) {
+          throw createHttpError(400, error.request);
+        } else {
+          throw createHttpError(400, error.message);
+        }
+      });
+      if (response) {
+        const { data } = response;
+        return data;
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   httpRequest(options: RequestOptions) {
