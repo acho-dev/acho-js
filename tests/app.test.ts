@@ -13,4 +13,13 @@ describe('test App endpoints', () => {
     const metadata = await appInstance.init();
     console.log(metadata);
   });
+
+  it('validate app version', async () => {
+    const appInstance = AchoInstance.app('328');
+    expect(appInstance).toBeInstanceOf(Object);
+    console.log(appInstance);
+    const metadata = await appInstance.init();
+    const appVersionInstance = await appInstance.version('352');
+    console.log(appVersionInstance);
+  });
 });

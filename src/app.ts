@@ -1,13 +1,14 @@
 import { ClientRequest } from 'http';
 import { AchoClient } from '.';
 import { ClientOptions } from './types';
+import { AppVersion } from './version';
 
 export class App {
-  private clientOpt: ClientOptions;
-  private id: string;
-  private metadata: any;
+  public clientOpt: ClientOptions;
+  public appId: string;
+  public metadata: any;
   constructor(id: string, clientOpt?: ClientOptions) {
-    this.id = id;
+    this.appId = id;
     this.clientOpt = {
       ...clientOpt,
       apiToken: clientOpt?.apiToken || process.env.TOKEN
@@ -19,9 +20,16 @@ export class App {
     const appObj = await client.request({
       method: 'get',
       headers: {},
-      path: `/apps/${this.id}`
+      path: `/apps/${this.appId}`
     });
     this.metadata = appObj;
     return this.metadata;
+  }
+
+  public async version(id: string) {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const version = new AppVersion(this.appId, id, this.clientOpt);
+    await version.init();
+    return version;
   }
 }
