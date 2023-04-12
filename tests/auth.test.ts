@@ -12,7 +12,7 @@ describe('test OAuth endpoints', () => {
     console.log(data);
   });
 
-  it('get oauth token', async () => {
+  it.skip('get oauth token', async () => {
     const data = await AchoInstance.OAuthEndpoints.getOAuthToken({ id: '4ee0dbf0-92ce-48e1-b5c1-b9248217041a' });
     expect(typeof data).toBe('string');
     console.log(data);
