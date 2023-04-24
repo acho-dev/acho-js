@@ -4,7 +4,7 @@ import { pipeline, Readable, Transform } from 'stream';
 import fs from 'fs';
 import { ClientRequest } from 'http';
 
-describe.skip('test resource:getTableData', () => {
+describe('test resource:getTableData', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
@@ -94,7 +94,7 @@ describe.skip('test resource:download', () => {
   });
 });
 
-describe.skip('test resource:query', () => {
+describe('test resource:query', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
@@ -249,7 +249,7 @@ describe.skip('test resource:sync', () => {
   }, 60000);
 });
 
-describe.skip('test resource:createReadStream', () => {
+describe('test resource:createReadStream', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
