@@ -1,2 +1,2 @@
-export const SERVER_ADDRESS = process.env.VUE_APP_SERVER_ADDR || '';
+export const SERVER_ADDRESS = process.env.API_ENDPOINT || '';
 export const SOCKET_NAMESPACE = '/soc';

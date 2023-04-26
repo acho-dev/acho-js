@@ -22,4 +22,19 @@ describe('test App endpoints', () => {
     const appVersionInstance = await appInstance.version('352');
     console.log(appVersionInstance);
   });
+
+  it('test app version room', async () => {
+    const appInstance = AchoInstance.app('328');
+    expect(appInstance).toBeInstanceOf(Object);
+    console.log(appInstance);
+    const metadata = await appInstance.init();
+    const appVersionInstance = await appInstance.version('352');
+    console.log(appVersionInstance);
+    const joined = await appVersionInstance.join();
+    console.log(joined);
+    expect(joined).toEqual('joined');
+    const left = await appVersionInstance.leave();
+    console.log(left);
+    expect(left).toEqual('left');
+  });
 });

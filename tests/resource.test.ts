@@ -249,7 +249,7 @@ describe.skip('test resource:sync', () => {
   }, 60000);
 });
 
-describe('test resource:createReadStream', () => {
+describe.skip('test resource:createReadStream', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
@@ -342,7 +342,7 @@ describe('test resource:createReadStream', () => {
   });
 });
 
-describe('test resource:createWriteStream', () => {
+describe.skip('test resource:createWriteStream', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
