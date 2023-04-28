@@ -9,32 +9,30 @@ describe('test App endpoints', () => {
   it('init app', async () => {
     const appInstance = AchoInstance.app('328');
     expect(appInstance).toBeInstanceOf(Object);
-    console.log(appInstance);
     const metadata = await appInstance.init();
-    console.log(metadata);
   });
 
   it('validate app version', async () => {
     const appInstance = AchoInstance.app('328');
     expect(appInstance).toBeInstanceOf(Object);
-    console.log(appInstance);
     const metadata = await appInstance.init();
     const appVersionInstance = await appInstance.version('352');
-    console.log(appVersionInstance);
+    appVersionInstance.disconnect();
   });
 
   it('test app version room', async () => {
     const appInstance = AchoInstance.app('328');
     expect(appInstance).toBeInstanceOf(Object);
-    console.log(appInstance);
+    // console.log(appInstance);
     const metadata = await appInstance.init();
     const appVersionInstance = await appInstance.version('352');
-    console.log(appVersionInstance);
+    // console.log(appVersionInstance);
     const joined = await appVersionInstance.join();
-    console.log(joined);
+    // console.log(joined);
     expect(joined).toEqual('joined');
     const left = await appVersionInstance.leave();
-    console.log(left);
+    // console.log(left);
     expect(left).toEqual('left');
+    appVersionInstance.disconnect();
   });
 });

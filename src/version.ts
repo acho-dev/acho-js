@@ -28,16 +28,6 @@ export class AppVersion {
       path: `/apps/${this.appId}/versions/${this.verId}`
     });
     this.metadata = verObj;
-    // console.log(`Socket: ${SERVER_ADDRESS + SOCKET_NAMESPACE}`);
-    // console.log(
-    //   `Config: ${JSON.stringify({
-    //     reconnectionAttempts: 10,
-    //     query: {
-    //       token: `jwt ${this.clientOpt.apiToken}`,
-    //       test: 'test parameter'
-    //     }
-    //   })}`
-    // );
     let socManager = new Manager(SERVER_ADDRESS, {
       reconnectionAttempts: 10,
       reconnectionDelayMax: 10000,
@@ -86,5 +76,12 @@ export class AppVersion {
     }
     await leaveAppBuilderRoom(this.socket, { app_version_id: this.verId, is_editing: true });
     return 'left';
+  }
+  public async disconnect() {
+    if (!this.socket) {
+      throw new Error('AppVersion not initialized');
+    }
+    this.socket.disconnect();
+    return 'closed';
   }
 }
