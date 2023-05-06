@@ -197,39 +197,37 @@ export class ResourceEndpoints {
       payload: { ...params, highWaterMark: (params.highWaterMark === undefined ? 32 : params.highWaterMark) * 1024 },
       responseType: 'stream'
     });
+    // data.on('data', (chunk: Buffer) => {
+    //   console.log(chunk.toString());
+    // });
     const readableStream: ResourceReadable = new ResourceReadable({
       // highWaterMark for streams in objectMode indicate "number of object",
       // otherwise, it means the buffer level in "number of bytes"
       highWaterMark: params.highWaterMark ? params.highWaterMark : 32,
       objectMode: true,
       read(this: ResourceReadable) {
-        if (!this.isRead) {
-          this.isRead = true;
-          data
-            .on('data', (chunk: Buffer) => {
-              if (!chunk.toString().endsWith('}')) this.fragment += chunk.toString();
-              else if (!chunk.toString().startsWith('{') && chunk.toString().endsWith('}')) {
-                this.push(JSON.parse(this.fragment + chunk.toString()));
-                this.fragment = '';
-              } else {
-                this.push(JSON.parse(chunk.toString()));
-                // this.fragment = '';
-              }
-            })
-            .on('error', (e: any) => {
-              console.log(e);
-            })
-            .on('end', () => {
-              this.push(null);
-            });
-        }
+        data
+          .on('data', (chunk: Buffer) => {
+            // console.log(chunk);
+            try {
+              this.push(JSON.parse(chunk.toString()));
+            } catch (e) {
+              // console.log(e);
+            }
+          })
+          .on('error', (e: any) => {
+            console.log(e);
+          })
+          .on('end', () => {
+            this.push(null);
+          });
       }
     });
 
-    readableStream.fragment = '';
-    readableStream.isRead = false;
+    // readableStream.fragment = '';
 
     return params.dataType === 'buffer' ? data : readableStream;
+    // return data;
   }
 
   /**

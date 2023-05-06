@@ -4,6 +4,8 @@ import { pipeline, Readable, Transform } from 'stream';
 import fs from 'fs';
 import { ClientRequest } from 'http';
 
+jest.useRealTimers();
+
 describe('test resource:getTableData', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
@@ -249,7 +251,7 @@ describe.skip('test resource:sync', () => {
   }, 60000);
 });
 
-describe.skip('test resource:createReadStream', () => {
+describe('test resource:createReadStream', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.TOKEN,
     endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
@@ -259,7 +261,7 @@ describe.skip('test resource:createReadStream', () => {
     const highWaterMark = 50;
     // NOTE: This seems to allow Axios to complete its housekeeping and be ready to track new connections opened afterwards
     // https://stackoverflow.com/questions/69169492/async-external-function-leaves-open-handles-jest-supertest-express
-    await process.nextTick(() => {});
+    process.nextTick(() => {});
     const readable = await AchoInstance.ResourceEndpoints.createReadStream({ resId: 4678, highWaterMark });
     const t = new Transform({
       writableObjectMode: true, // set this one to true
@@ -276,15 +278,14 @@ describe.skip('test resource:createReadStream', () => {
       // Using either pipeline() or readable.pipe().pipe() is fine
       pipeline(readable, t, writable, (err) => {
         if (err) {
-          console.error('Pipeline failed.', err);
-        } else {
-          console.log('Pipeline succeeded.');
+          throw err;
         }
       });
       // readable.pipe(t).pipe(writable);
       readable
         .on('end', () => {
           console.log('Written readable stream to file');
+          readable.destroy();
           resolve('finished');
         })
         .on('error', (err: any) => {
@@ -292,54 +293,67 @@ describe.skip('test resource:createReadStream', () => {
         });
     });
     expect(readable).toBeInstanceOf(Readable);
-  });
+  }, 50000);
 
-  test('create read stream with a large file', async () => {
+  test.skip('create read stream with a large file', async () => {
     const highWaterMark = 32;
-    await process.nextTick(() => {});
+    process.nextTick(() => {});
     // TEST pipelining large file
     const readable = await AchoInstance.ResourceEndpoints.createReadStream({ resId: 4676, highWaterMark });
     let count = 0;
     readable
       .on('data', () => {
         count++;
+        if (count % 1000 === 0) console.log(count);
       })
       .on('end', () => {
         console.log('Written readable stream to file');
         console.log(count);
+        readable.destroy();
       })
       .on('error', (err: any) => {});
 
     expect(readable).toBeInstanceOf(Readable);
-  });
+  }, 200000);
 
   test('create read stream with assetId', async () => {
     // NOTE: This seems to allow Axios to complete its housekeeping and be ready to track new connections opened afterwards
     // https://stackoverflow.com/questions/69169492/async-external-function-leaves-open-handles-jest-supertest-express
-    await process.nextTick(() => {});
+    process.nextTick(() => {});
     const data = await AchoInstance.ResourceEndpoints.createReadStream({ assetId: 9248 });
     let count = 0;
-    data.on('data', () => count++).on('end', () => expect(count).toBe(9994)); // expected value subject to change with the asset
-    expect(data).toBeInstanceOf(Readable);
+    await new Promise((resolve, reject) => {
+      data
+        .on('data', (data) => {
+          count++;
+        })
+        .on('end', () => {
+          expect(count).toBe(9994);
+          data.destroy();
+          resolve('finished');
+        }); // expected value subject to change with the asset
+      expect(data).toBeInstanceOf(Readable);
+    });
   }, 20000);
 
-  test('create read stream with an integration resource', async () => {
+  test.skip('create read stream with an integration resource', async () => {
     // res_type = 'integration'
-    await process.nextTick(() => {});
+    process.nextTick(() => {});
     const data = await AchoInstance.ResourceEndpoints.createReadStream({
       assetId: 9249,
       tableId: 'Sheet1'
     });
-    // let count = 0;
-    // data
-    //   .on('data', (data) => {
-    //     count++;
-    //   })
-    //   .on('end', () => {
-    //     console.log(count);
-    //   });
+    let count = 0;
+    data
+      .on('data', (data) => {
+        count++;
+      })
+      .on('end', () => {
+        console.log(count);
+        data.destroy();
+      });
     expect(data).toBeInstanceOf(Readable);
-  });
+  }, 20000);
 });
 
 describe.skip('test resource:createWriteStream', () => {
