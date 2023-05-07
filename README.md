@@ -42,3 +42,36 @@ After the package is installed in your **package.json**
 ```js
 import { Acho } from '@acho-inc/acho-js';
 ```
+
+## Example
+
+**Initializing the Acho Client**
+
+```js
+const AchoInstance = new Acho();
+```
+
+The SDK will use the environment variables from your system
+
+**_ACHO_TOKEN_**: The Acho develoepr API token
+
+- If you are a current subscriber, retrieve it from your profile page
+- If you want to try out the SDK without an active subscription, please [contact us](https://calendly.com/contact_acho/discovery-call)
+
+**_ACHO_API_ENDPOINT_**: The service backend you are connecting to
+
+- Default to https://kube.acho.io
+- This setting is irrelevant unless you subscribe to on-premise or dedicated server
+
+If you prefer convenience in testing, you could also initialize the instance by passing in the variables in constructor
+
+```js
+const AchoInstance = new Acho({
+  apiToken: 'eyEi3oldsi....',
+  endpoint: 'https://kube.acho.io'
+});
+```
+
+> **Note:** It is not recommended to expose your API token in the code base, especially on production\
+> We highly recommend dotenv for conveniently modifying environment variables during testing\
+> If you suspect your token might be leaked, you can invalidate the token in your profile page, or report to [contact@acho.io](mailto:contact@acho.io)

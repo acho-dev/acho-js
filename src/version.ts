@@ -16,7 +16,7 @@ export class AppVersion {
     this.verId = verId;
     this.clientOpt = {
       ...clientOpt,
-      apiToken: clientOpt?.apiToken || process.env.TOKEN
+      apiToken: clientOpt?.apiToken || process.env.ACHO_TOKEN
     };
   }
 

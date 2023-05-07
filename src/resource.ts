@@ -69,7 +69,7 @@ export class ResourceEndpoints {
   constructor(clientOpt: ClientOptions) {
     this.clientOpt = {
       ...clientOpt,
-      apiToken: clientOpt.apiToken || process.env.TOKEN
+      apiToken: clientOpt.apiToken || process.env.ACHO_TOKEN
     };
   }
 

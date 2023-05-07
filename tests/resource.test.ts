@@ -8,8 +8,8 @@ jest.useRealTimers();
 
 describe('test resource:getTableData', () => {
   const AchoInstance = new Acho({
-    apiToken: process.env.TOKEN,
-    endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
+    apiToken: process.env.ACHO_TOKEN,
+    endpoint: process.env.ACHO_API_ENDPOINT ? process.env.ACHO_API_ENDPOINT : 'http://localhost:8888'
   });
 
   let assetResp: ResourceTableDataResp;
@@ -54,8 +54,8 @@ describe('test resource:getTableData', () => {
 
 describe.skip('test resource:download', () => {
   const AchoInstance = new Acho({
-    apiToken: process.env.TOKEN,
-    endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
+    apiToken: process.env.ACHO_TOKEN,
+    endpoint: process.env.ACHO_API_ENDPOINT ? process.env.ACHO_API_ENDPOINT : 'http://localhost:8888'
   });
 
   let assetResp: any;
@@ -98,8 +98,8 @@ describe.skip('test resource:download', () => {
 
 describe('test resource:query', () => {
   const AchoInstance = new Acho({
-    apiToken: process.env.TOKEN,
-    endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
+    apiToken: process.env.ACHO_TOKEN,
+    endpoint: process.env.ACHO_API_ENDPOINT ? process.env.ACHO_API_ENDPOINT : 'http://localhost:8888'
   });
 
   const actionQuery: ActionQuery = {
@@ -189,7 +189,7 @@ describe('test resource:query', () => {
     expect(_data).toEqual(resResp);
   });
 
-  test('get Airbyte resource table with query and default page size', async () => {
+  test('get Integration resource table with query and default page size', async () => {
     actionQuery.query = 'SELECT * FROM {{{R.4651.Sheet1}}};';
     actionQuery.helperInfo.resources = [
       {
@@ -236,8 +236,8 @@ describe('test resource:query', () => {
 // NOTE: set resource:sync tests timeout to 60000 to override the default 5000ms timeout
 describe.skip('test resource:sync', () => {
   const AchoInstance = new Acho({
-    apiToken: process.env.TOKEN,
-    endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
+    apiToken: process.env.ACHO_TOKEN,
+    endpoint: process.env.ACHO_API_ENDPOINT ? process.env.ACHO_API_ENDPOINT : 'http://localhost:8888'
   });
 
   test('sync resource table data', async () => {
@@ -253,8 +253,8 @@ describe.skip('test resource:sync', () => {
 
 describe('test resource:createReadStream', () => {
   const AchoInstance = new Acho({
-    apiToken: process.env.TOKEN,
-    endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
+    apiToken: process.env.ACHO_TOKEN,
+    endpoint: process.env.ACHO_API_ENDPOINT ? process.env.ACHO_API_ENDPOINT : 'http://localhost:8888'
   });
 
   test('create read stream with resId', async () => {
@@ -358,8 +358,8 @@ describe('test resource:createReadStream', () => {
 
 describe.skip('test resource:createWriteStream', () => {
   const AchoInstance = new Acho({
-    apiToken: process.env.TOKEN,
-    endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
+    apiToken: process.env.ACHO_TOKEN,
+    endpoint: process.env.ACHO_API_ENDPOINT ? process.env.ACHO_API_ENDPOINT : 'http://localhost:8888'
   });
 
   test('insert rows with resId and csv string', async () => {
@@ -417,7 +417,7 @@ describe.skip('test resource:createWriteStream', () => {
   test('error handling - wrong credential', async () => {
     const opts = {
       apiToken: 'xxxxxxxx',
-      endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
+      endpoint: process.env.ACHO_API_ENDPOINT ? process.env.ACHO_API_ENDPOINT : 'http://localhost:8888'
     };
     const AchoInstanceNoAuth = new Acho(opts);
 

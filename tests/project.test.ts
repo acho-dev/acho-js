@@ -2,8 +2,8 @@ import { Acho } from '../src/index';
 
 describe('test project endpoints', () => {
   const AchoInstance = new Acho({
-    apiToken: process.env.TOKEN,
-    endpoint: process.env.API_ENDPOINT ? process.env.API_ENDPOINT : 'http://localhost:8888'
+    apiToken: process.env.ACHO_TOKEN,
+    endpoint: process.env.ACHO_API_ENDPOINT ? process.env.ACHO_API_ENDPOINT : 'http://localhost:8888'
   });
 
   it('get project table by viewId with page size of 10', async () => {

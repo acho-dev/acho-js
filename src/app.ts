@@ -11,7 +11,7 @@ export class App {
     this.appId = id;
     this.clientOpt = {
       ...clientOpt,
-      apiToken: clientOpt?.apiToken || process.env.TOKEN
+      apiToken: clientOpt?.apiToken || process.env.ACHO_TOKEN
     };
   }
 
