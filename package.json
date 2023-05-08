@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/unibit_web/acho-js.git"
+    "url": "git@github.com:acho-dev/acho-js.git"
   },
   "engines": {
     "node": ">=12.13.0",
@@ -18,9 +18,9 @@
   "author": "Timothy Zhang",
   "license": "MIT",
   "bugs": {
-    "url": "https://bitbucket.org/unibit_web/acho-js/issues"
+    "url": "https://github.com/acho-dev/acho-js/issues"
   },
-  "homepage": "https://bitbucket.org/unibit_web/acho-js#readme",
+  "homepage": "https://github.com/acho-dev/acho-js#readme",
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",
     "@types/http-errors": "^1.8.2",
