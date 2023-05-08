@@ -10,7 +10,9 @@
     <a href="https://acho.io"><b>Website </b></a>
 </p>
 
-[![npm version](https://img.shields.io/npm/v/axios.svg?style=flat-square)](https://www.npmjs.com/package/@acho-inc/acho-js)
+[![npm version](https://img.shields.io/npm/v/@acho-inc/acho-js?style=flat-square)](https://www.npmjs.com/package/@acho-inc/acho-js)
+[![npm version](https://img.shields.io/node/v/@acho-inc/acho-js?style=flat-square)](https://www.npmjs.com/package/@acho-inc/acho-js)
+[![npm version](https://img.shields.io/npm/l/@acho-inc/acho-js?style=flat-square)](https://www.npmjs.com/package/@acho-inc/acho-js)
 
 Acho.js 1.4.1
 
