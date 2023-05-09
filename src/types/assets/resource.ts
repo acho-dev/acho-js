@@ -5,10 +5,10 @@ export interface ResourceHelperInfo {
   resourceTable: string;
 }
 
-export class ResourceReadable extends Readable {
-  fragment?: string;
-  isRead?: boolean;
-}
+// export class ResourceReadable extends Readable {
+//   fragment?: string;
+//   isRead?: boolean;
+// }
 
 /**
  * Resource response types

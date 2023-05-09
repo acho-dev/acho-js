@@ -1,14 +1,7 @@
 import { ClientRequest } from 'http';
-import {
-  AchoClient,
-  ActionQuery,
-  ResourceTableDataResp,
-  ResourceTableSchemaResp,
-  ResourceDownloadResp,
-  ResourceReadable
-} from '.';
+import { AchoClient, ActionQuery, ResourceTableDataResp, ResourceTableSchemaResp, ResourceDownloadResp } from '.';
 import { ClientOptions } from './types';
-import { Readable } from 'stream';
+import { Readable, Transform, TransformCallback } from 'stream';
 import createError from 'http-errors';
 
 export interface getTableDataParams {
@@ -195,38 +188,63 @@ export class ResourceEndpoints {
       headers: {},
       path: '/resource/create-read-stream',
       payload: { ...params, highWaterMark: (params.highWaterMark === undefined ? 32 : params.highWaterMark) * 1024 },
-      responseType: 'stream'
+      responseType: 'stream',
+      axiosSettings: {
+        decompress: false,
+        timeout: 300 * 1000
+      }
+    });
+    data.on('data', (chunk: Buffer) => {
+      console.log(chunk.toString());
     });
     // data.on('data', (chunk: Buffer) => {
     //   console.log(chunk.toString());
     // });
-    const readableStream: ResourceReadable = new ResourceReadable({
-      // highWaterMark for streams in objectMode indicate "number of object",
-      // otherwise, it means the buffer level in "number of bytes"
-      highWaterMark: params.highWaterMark ? params.highWaterMark : 32,
-      objectMode: true,
-      read(this: ResourceReadable) {
-        data
-          .on('data', (chunk: Buffer) => {
-            // console.log(chunk);
-            try {
-              this.push(JSON.parse(chunk.toString()));
-            } catch (e) {
-              // console.log(e);
-            }
-          })
-          .on('error', (e: any) => {
-            console.log(e);
-          })
-          .on('end', () => {
-            this.push(null);
-          });
+    // const readableStream: Readable = new Readable({
+    //   // highWaterMark for streams in objectMode indicate "number of object",
+    //   // otherwise, it means the buffer level in "number of bytes"
+    //   highWaterMark: params.highWaterMark ? params.highWaterMark : 32,
+    //   objectMode: true,
+    //   read() {
+    //     data
+    //       .on('data', (chunk: Buffer) => {
+    //         // console.log(chunk);
+    //         try {
+    //           this.push(JSON.parse(chunk.toString()));
+    //         } catch (e) {
+    //           // console.log(e);
+    //         }
+    //       })
+    //       .on('error', (e: any) => {
+    //         console.log(e);
+    //       })
+    //       .on('end', () => {
+    //         this.push(null);
+    //       });
+    //   }
+    // });
+
+    const transformStream = new Transform({
+      readableObjectMode: true,
+      transform(chunk: Buffer, encoding: string, callback: TransformCallback) {
+        try {
+          const data = JSON.parse(chunk.toString());
+          callback(null, data);
+        } catch (err) {
+          if (err instanceof Error) {
+            callback(err);
+          } else {
+            callback(new Error('Unknown error'));
+          }
+        }
       }
     });
 
+    data.pipe(transformStream);
+
     // readableStream.fragment = '';
 
-    return params.dataType === 'buffer' ? data : readableStream;
+    return params.dataType === 'buffer' ? data : transformStream;
     // return data;
   }
 

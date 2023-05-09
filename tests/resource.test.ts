@@ -296,7 +296,7 @@ describe('test resource:createReadStream', () => {
   }, 50000);
 
   test.skip('create read stream with a large file', async () => {
-    const highWaterMark = 32;
+    const highWaterMark = 50;
     process.nextTick(() => {});
     // TEST pipelining large file
     const readable = await AchoInstance.ResourceEndpoints.createReadStream({ resId: 4676, highWaterMark });
@@ -325,6 +325,7 @@ describe('test resource:createReadStream', () => {
     await new Promise((resolve, reject) => {
       data
         .on('data', (data) => {
+          // console.log(data);
           count++;
         })
         .on('end', () => {
