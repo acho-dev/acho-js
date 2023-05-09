@@ -325,7 +325,6 @@ describe('test resource:createReadStream', () => {
     await new Promise((resolve, reject) => {
       data
         .on('data', (data) => {
-          // console.log(data);
           count++;
         })
         .on('end', () => {

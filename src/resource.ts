@@ -194,45 +194,24 @@ export class ResourceEndpoints {
         timeout: 300 * 1000
       }
     });
-    data.on('data', (chunk: Buffer) => {
-      console.log(chunk.toString());
-    });
     // data.on('data', (chunk: Buffer) => {
     //   console.log(chunk.toString());
     // });
-    // const readableStream: Readable = new Readable({
-    //   // highWaterMark for streams in objectMode indicate "number of object",
-    //   // otherwise, it means the buffer level in "number of bytes"
-    //   highWaterMark: params.highWaterMark ? params.highWaterMark : 32,
-    //   objectMode: true,
-    //   read() {
-    //     data
-    //       .on('data', (chunk: Buffer) => {
-    //         // console.log(chunk);
-    //         try {
-    //           this.push(JSON.parse(chunk.toString()));
-    //         } catch (e) {
-    //           // console.log(e);
-    //         }
-    //       })
-    //       .on('error', (e: any) => {
-    //         console.log(e);
-    //       })
-    //       .on('end', () => {
-    //         this.push(null);
-    //       });
-    //   }
-    // });
+
+    let fragment = '';
 
     const transformStream = new Transform({
       readableObjectMode: true,
       transform(chunk: Buffer, encoding: string, callback: TransformCallback) {
         try {
-          const data = JSON.parse(chunk.toString());
+          const data = JSON.parse(fragment + chunk.toString());
+          fragment = '';
           callback(null, data);
         } catch (err) {
           if (err instanceof Error) {
-            callback(err);
+            console.log(err);
+            fragment += chunk.toString();
+            callback(null);
           } else {
             callback(new Error('Unknown error'));
           }
