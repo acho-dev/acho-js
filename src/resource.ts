@@ -265,7 +265,7 @@ export class ResourceEndpoints {
           callback(null, data);
         } catch (err) {
           if (err instanceof Error) {
-            console.log(err);
+            // console.log(err);
             fragment += chunk.toString();
             callback(null);
           } else {

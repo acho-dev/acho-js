@@ -28,6 +28,7 @@ describe('test resource: create', () => {
       tableName: 'test',
       schema: { col1: 'STRING', col2: 'INTEGER' }
     }); // Test get by assetId
+    console.log(data);
     expect(data).toBeInstanceOf(Object);
   });
 

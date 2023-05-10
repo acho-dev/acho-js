@@ -88,3 +88,92 @@ const AchoInstance = new Acho({
 > If you suspect your token might be leaked, you can invalidate the token in your profile page, or report to [contact@acho.io](mailto:contact@acho.io)
 
 **Working with Resource Endpoints**
+
+Create a new resource
+
+```js
+const resourceResp = await AchoInstance.ResourceEndpoints.create({ name: 'test' });
+
+/* resourceResp: { 
+    resId: number,
+    assetId: number,
+    resource: {
+      id: number,
+      res_name: string,
+      res_display_name: string,
+      res_type: 'integration',
+      is_ready: 1,
+      create_time: unix_timestamp (UTC),
+      user_id: number,
+      update_time: unix_timestamp (UTC),
+      asset_id: number
+    }
+   }
+*/
+```
+
+Create a table in a resource
+
+```js
+const table = await AchoInstance.ResourceEndpoints.createTable({
+  resId: testResId,
+  tableName: 'test',
+  schema: { col1: 'STRING', col2: 'INTEGER' }
+});
+
+/* resourceTableResp: {
+    resource: {
+      id: number,
+      res_name: string,
+      ...
+    }
+    tableName: string
+   }
+*/
+```
+
+Stream data into a table
+
+```js
+// JSON flavor
+const writableStream = AchoInstance.ResourceEndpoints.createWriteStream({
+  resId: testResId,
+  tableId: 'test',
+  dataType: 'json'
+});
+const testArray = [
+  { col1: 'JSON_1', col2: 1 },
+  { col1: 'JSON_2', col2: 2 },
+  { col1: 'JSON_3', col2: 3 },
+  { col1: 'JSON_4', col2: 4 }
+];
+await new Promise((resolve) => {
+  testArray.forEach((row) => {
+    writableStream.write(JSON.stringify(row) + '\n');
+  });
+  writableStream.end();
+  writableStream.on('response', (res) => {
+    expect(res.statusCode).toBe(200);
+    resolve('done');
+  });
+});
+
+// CSV flavor
+const writableStream = AchoInstance.ResourceEndpoints.createWriteStream({
+  resId: testResId,
+  tableId: 'test',
+  dataType: 'csv'
+});
+const testCSV = 'CSV_1,1\nCSV_2,2\nCSV_3,3\nCSV_4,4\n';
+await new Promise((resolve) => {
+  writableStream.write(testCSV);
+  writableStream.end();
+  writableStream.on('response', (res) => {
+    expect(res.statusCode).toBe(200);
+    resolve('done');
+  });
+});
+```
+
+> **Note:** You can also pipe readable stream into the writableStream created from a resource table\
+> The supported formats are CSV and NDJSON.
