@@ -14,12 +14,9 @@
 [![npm version](https://img.shields.io/node/v/@acho-inc/acho-js?style=flat-square)](https://www.npmjs.com/package/@acho-inc/acho-js)
 [![npm version](https://img.shields.io/npm/l/@acho-inc/acho-js?style=flat-square)](https://www.npmjs.com/package/@acho-inc/acho-js)
 
-Acho.js 1.4.4
-
 ## What is this repository for?
 
 - SDK for Acho Studio API
-- 1.4.4
 
 ## Features
 
