@@ -89,3 +89,5 @@ const AchoInstance = new Acho({
 > **Note:** It is not recommended to expose your API token in the code base, especially on production\
 > We highly recommend dotenv for conveniently modifying environment variables during testing\
 > If you suspect your token might be leaked, you can invalidate the token in your profile page, or report to [contact@acho.io](mailto:contact@acho.io)
+
+**Working with Resource Endpoints**

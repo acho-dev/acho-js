@@ -4,6 +4,33 @@ import { ClientOptions } from './types';
 import { Readable, Transform, TransformCallback } from 'stream';
 import createError from 'http-errors';
 
+export interface createParams {
+  name: string;
+}
+
+export type colType =
+  | 'INTEGER'
+  | 'FLOAT'
+  | 'NUMERIC'
+  | 'STRING'
+  | 'BOOLEAN'
+  | 'DATE'
+  | 'DATETIME'
+  | 'TIMESTAMP'
+  | 'TIME'
+  | 'BYTES'
+  | 'ARRAY'
+  | 'STRUCT'
+  | 'GEOGRAPHY'
+  | 'JSON'
+  | 'JSONB';
+
+export interface createTableParams {
+  resId: number;
+  tableName: string;
+  schema: Record<string, colType>;
+}
+
 export interface getTableDataParams {
   assetId?: number;
   resId?: number;
@@ -64,6 +91,33 @@ export class ResourceEndpoints {
       ...clientOpt,
       apiToken: clientOpt.apiToken || process.env.ACHO_TOKEN
     };
+  }
+
+  /**
+   * Create a generic resource with name
+   * @param {createParams} params
+   * @param {number} params.name - either provide a assetId or a resId
+   */
+  async create(params: createParams) {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const data = await client.request({
+      method: 'post',
+      headers: {},
+      path: '/resource/add/sdk',
+      payload: params
+    });
+    return data;
+  }
+
+  async createTable(params: createTableParams) {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const data = await client.request({
+      method: 'post',
+      headers: {},
+      path: '/integration/tables/add',
+      payload: params
+    });
+    return data;
   }
 
   /**
@@ -204,6 +258,8 @@ export class ResourceEndpoints {
       readableObjectMode: true,
       transform(chunk: Buffer, encoding: string, callback: TransformCallback) {
         try {
+          // console.log('fragment', fragment);
+          // console.log('chunk', chunk.toString());
           const data = JSON.parse(fragment + chunk.toString());
           fragment = '';
           callback(null, data);

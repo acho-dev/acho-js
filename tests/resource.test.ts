@@ -1,10 +1,82 @@
 import { Acho } from '../src/index';
 import { ActionQuery, ResourceTableDataResp } from '../src/types';
 import { pipeline, Readable, Transform } from 'stream';
-import fs from 'fs';
+import fs, { write } from 'fs';
 import { ClientRequest } from 'http';
 
 jest.useRealTimers();
+
+describe('test resource: create', () => {
+  const AchoInstance = new Acho({
+    apiToken: process.env.ACHO_TOKEN,
+    endpoint: process.env.ACHO_API_ENDPOINT ? process.env.ACHO_API_ENDPOINT : 'http://localhost:8888'
+  });
+
+  let testResId = -1;
+
+  test('create integration resource', async () => {
+    const data = await AchoInstance.ResourceEndpoints.create({ name: 'test' }); // Test get by assetId
+    console.log(data);
+    expect(data).toBeInstanceOf(Object);
+    expect(data).toHaveProperty('resId');
+    testResId = data.resId;
+  });
+
+  test('create integration resource table', async () => {
+    const data = await AchoInstance.ResourceEndpoints.createTable({
+      resId: testResId,
+      tableName: 'test',
+      schema: { col1: 'STRING', col2: 'INTEGER' }
+    }); // Test get by assetId
+    expect(data).toBeInstanceOf(Object);
+  });
+
+  test('insert rows with resId, tableId and json string', async () => {
+    const writableStream = AchoInstance.ResourceEndpoints.createWriteStream({
+      resId: testResId,
+      tableId: 'test',
+      dataType: 'json'
+    });
+    const testArray = [
+      { col1: 'JSON_1', col2: 1 },
+      { col1: 'JSON_2', col2: 2 },
+      { col1: 'JSON_3', col2: 3 },
+      { col1: 'JSON_4', col2: 4 }
+    ];
+    await new Promise((resolve) => {
+      testArray.forEach((row) => {
+        writableStream.write(JSON.stringify(row) + '\n');
+      });
+      writableStream.end();
+      writableStream.on('response', (res) => {
+        expect(res.statusCode).toBe(200);
+        resolve('done');
+      });
+    });
+    expect(writableStream).toBeInstanceOf(ClientRequest);
+  });
+
+  test('insert rows with resId, tableId and csv rows', async () => {
+    const writableStream = AchoInstance.ResourceEndpoints.createWriteStream({
+      resId: testResId,
+      tableId: 'test',
+      dataType: 'csv'
+    });
+    const testCSV = 'CSV_1,1\nCSV_2,2\nCSV_3,3\nCSV_4,4\n';
+    await new Promise((resolve) => {
+      // testCSV.split('\n').forEach((row) => {
+      //   writableStream.write(row + '\n');
+      // });
+      writableStream.write(testCSV);
+      writableStream.end();
+      writableStream.on('response', (res) => {
+        expect(res.statusCode).toBe(200);
+        resolve('done');
+      });
+    });
+    expect(writableStream).toBeInstanceOf(ClientRequest);
+  });
+});
 
 describe('test resource:getTableData', () => {
   const AchoInstance = new Acho({
