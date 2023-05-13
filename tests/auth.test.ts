@@ -6,6 +6,12 @@ describe('test OAuth endpoints', () => {
     endpoint: process.env.ACHO_API_ENDPOINT ? process.env.ACHO_API_ENDPOINT : 'http://localhost:8888'
   });
 
+  it('identify yourself', async () => {
+    const data = await AchoInstance.OAuthEndpoints.identify();
+    expect(data).toBeInstanceOf(Object);
+    console.log(data);
+  });
+
   it('get oauth list', async () => {
     const data = await AchoInstance.OAuthEndpoints.getOAuthClientList();
     expect(data).toBeInstanceOf(Object);
