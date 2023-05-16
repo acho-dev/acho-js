@@ -26,7 +26,7 @@ describe('test resource: create', () => {
     const data = await AchoInstance.ResourceEndpoints.createTable({
       resId: testResId,
       tableName: 'test',
-      schema: { col1: 'STRING', col2: 'INTEGER' }
+      schema: { col1: 'STRING', col2: 'JSON' }
     }); // Test get by assetId
     console.log(data);
     expect(data).toBeInstanceOf(Object);
@@ -39,17 +39,20 @@ describe('test resource: create', () => {
       dataType: 'json'
     });
     const testArray = [
-      { col1: 'JSON_1', col2: 1 },
-      { col1: 'JSON_2', col2: 2 },
-      { col1: 'JSON_3', col2: 3 },
-      { col1: 'JSON_4', col2: 4 }
+      { col1: 'JSON_1', col2: { s1: 1 } },
+      { col1: 'JSON_2', col2: [1, 2, 3] },
+      { col1: 'JSON_3', col2: { s1: 3 } },
+      { col1: 'JSON_4', col2: { s1: 4 } }
     ];
     await new Promise((resolve) => {
       testArray.forEach((row) => {
-        writableStream.write(JSON.stringify(row) + '\n');
+        writableStream.write(JSON.stringify(row) + '\n', (err) => {
+          console.log(err);
+        });
       });
       writableStream.end();
       writableStream.on('response', (res) => {
+        console.log(res);
         expect(res.statusCode).toBe(200);
         resolve('done');
       });
