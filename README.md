@@ -1,6 +1,6 @@
 <h1 align="center">
    <b>
-        <a href="https://acho.io"><img src="https://asset.acho.io/acho-website-assets/home_new/logo-black.png" /></a><br>
+        <a href="https://acho.io"><img src="https://storage.googleapis.com/acho-prod-assets/acho-website-assets/logo/acho_logo_dark.svg" width="360px" /></a><br>
     </b>
 </h1>
 
@@ -39,13 +39,13 @@
 **Package Manager**
 
 ```
-$ npm install acho-js
+$ npm install @acho-inc/acho-js
 ```
 
 If you want to use it as a dependency in your project that needs to be built and deployed
 
 ```
-$ npm install acho-js --save
+$ npm install @acho-inc/acho-js --save
 ```
 
 After the package is installed in your **package.json**
@@ -115,7 +115,7 @@ const resourceResp = await AchoInstance.ResourceEndpoints.create({ name: 'test' 
 Create a table in a resource
 
 ```js
-const table = await AchoInstance.ResourceEndpoints.createTable({
+const resourceTableResp = await AchoInstance.ResourceEndpoints.createTable({
   resId: testResId,
   tableName: 'test',
   schema: { col1: 'STRING', col2: 'INTEGER' }
@@ -153,7 +153,7 @@ await new Promise((resolve) => {
   });
   writableStream.end();
   writableStream.on('response', (res) => {
-    expect(res.statusCode).toBe(200);
+    // expect(res.statusCode).toBe(200);
     resolve('done');
   });
 });
@@ -169,7 +169,7 @@ await new Promise((resolve) => {
   writableStream.write(testCSV);
   writableStream.end();
   writableStream.on('response', (res) => {
-    expect(res.statusCode).toBe(200);
+    // expect(res.statusCode).toBe(200);
     resolve('done');
   });
 });
@@ -177,3 +177,61 @@ await new Promise((resolve) => {
 
 > **Note:** You can also pipe readable stream into the writableStream created from a resource table\
 > The supported formats are CSV and NDJSON.
+
+## Use Cases
+
+**Create a Resource and a table in the Resource, then insert data into the table**
+
+Create a new resource and a resource table first
+
+```js
+const createResourceTable = async () => {
+  const resourceResp = await AchoInstance.ResourceEndpoints.create({
+    name: 'Test Resource'
+  });
+
+  const { resId } = resourceResp;
+
+  // please make sure you capture the resId here if you want to do the process in two steps
+  console.log(resId);
+
+  const resourceTableResp = await AchoInstance.ResourceEndpoints.createTable({
+    resId: resId,
+    tableName: 'Test Table',
+    schema: { name: 'STRING', age: 'INTEGER' }
+  });
+};
+```
+
+Write data to the resource table (in this example we are using JSON)
+
+```js
+const writeData = async () => {
+  const writableStream = AchoInstance.ResourceEndpoints.createWriteStream({
+    // replace 1234 with the id you captured earlier
+    resId: 1234,
+    tableId: 'Test Table',
+    dataType: 'json'
+  });
+  const testArray = [
+    { name: 'Adam', age: 28 },
+    { name: 'Dan', age: 33 },
+    { name: 'Jason', age: 35 },
+    { name: 'Zach', age: 40 }
+  ];
+  await new Promise((resolve) => {
+    testArray.forEach((row) => {
+      writableStream.write(JSON.stringify(row) + '\n');
+    });
+    writableStream.end();
+    writableStream.on('response', (res) => {
+      resolve('done');
+    });
+  });
+};
+```
+
+After finishing the previous steps, if you add "Test Table" from Resource "Test Resource" to a Project on Acho, here is what you will get.
+
+<img src="
+https://storage.googleapis.com/acho-prod-assets/sdk/write_data_example_result.png" width="360px" style="padding-left: 48px"/>
