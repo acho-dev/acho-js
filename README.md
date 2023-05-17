@@ -213,12 +213,14 @@ const writeData = async () => {
     tableId: 'Test Table',
     dataType: 'json'
   });
+
   const testArray = [
     { name: 'Adam', age: 28 },
     { name: 'Dan', age: 33 },
     { name: 'Jason', age: 35 },
     { name: 'Zach', age: 40 }
   ];
+
   await new Promise((resolve) => {
     testArray.forEach((row) => {
       writableStream.write(JSON.stringify(row) + '\n');
