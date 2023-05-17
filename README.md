@@ -1,6 +1,6 @@
 <h1 align="center">
    <b>
-        <a href="https://acho.io"><img src="https://storage.googleapis.com/acho-prod-assets/acho-website-assets/logo/acho_logo_dark.svg" width="360px" /></a><br>
+        <a href="https://acho.io"><img src="https://storage.googleapis.com/acho-prod-assets/acho-website-assets/logo/acho_logo_dark.svg" width="360" /></a><br>
     </b>
 </h1>
 
@@ -234,4 +234,4 @@ const writeData = async () => {
 After finishing the previous steps, if you add "Test Table" from Resource "Test Resource" to a Project on Acho, here is what you will get.
 
 <img src="
-https://storage.googleapis.com/acho-prod-assets/sdk/write_data_example_result.png" width="360px" style="padding-left: 48px"/>
+https://storage.googleapis.com/acho-prod-assets/sdk/write_data_example_result.png" width="360" style="padding-left: 48px"/>
