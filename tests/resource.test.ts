@@ -47,12 +47,13 @@ describe('test resource: create', () => {
     await new Promise((resolve) => {
       testArray.forEach((row) => {
         writableStream.write(JSON.stringify(row) + '\n', (err) => {
-          console.log(err);
+          if (err) {
+            console.log(err);
+          }
         });
       });
       writableStream.end();
       writableStream.on('response', (res) => {
-        console.log(res);
         expect(res.statusCode).toBe(200);
         resolve('done');
       });
@@ -79,6 +80,13 @@ describe('test resource: create', () => {
       });
     });
     expect(writableStream).toBeInstanceOf(ClientRequest);
+  });
+
+  test('delete resource with resId', async () => {
+    const deleteResult = await AchoInstance.ResourceEndpoints.delete({
+      resId: testResId
+    });
+    expect(deleteResult).toBe('success');
   });
 });
 
@@ -378,7 +386,7 @@ describe('test resource:createReadStream', () => {
     const readable = await AchoInstance.ResourceEndpoints.createReadStream({ resId: 4676, highWaterMark });
     let count = 0;
     readable
-      .on('data', () => {
+      .on('data', (data) => {
         count++;
         if (count % 1000 === 0) console.log(count);
       })
@@ -412,23 +420,26 @@ describe('test resource:createReadStream', () => {
     });
   }, 20000);
 
-  test.skip('create read stream with an integration resource', async () => {
+  test('create read stream with an integration resource', async () => {
     // res_type = 'integration'
     process.nextTick(() => {});
     const data = await AchoInstance.ResourceEndpoints.createReadStream({
-      assetId: 9249,
-      tableId: 'Sheet1'
+      assetId: 12523,
+      tableId: 'RunningAPIs_csv'
     });
     let count = 0;
-    data
-      .on('data', (data) => {
-        count++;
-      })
-      .on('end', () => {
-        console.log(count);
-        data.destroy();
-      });
-    expect(data).toBeInstanceOf(Readable);
+    await new Promise((resolve, reject) => {
+      data
+        .on('data', (data) => {
+          count++;
+        })
+        .on('end', () => {
+          console.log(count);
+          data.destroy();
+          resolve('finished');
+        });
+      expect(data).toBeInstanceOf(Readable);
+    });
   }, 20000);
 });
 

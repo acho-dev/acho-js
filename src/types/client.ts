@@ -13,7 +13,7 @@ export interface AuthHeader {
 }
 
 export interface RequestOptions {
-  method: 'post' | 'get';
+  method: 'post' | 'get' | 'put' | 'delete';
   headers: Record<string, any>;
   path: string;
   payload?: Record<string, any>;

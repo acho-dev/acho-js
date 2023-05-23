@@ -8,6 +8,10 @@ export interface createParams {
   name: string;
 }
 
+export interface deleteParams {
+  resId: number;
+}
+
 export type colType =
   | 'INTEGER'
   | 'FLOAT'
@@ -116,6 +120,18 @@ export class ResourceEndpoints {
       headers: {},
       path: '/integration/tables/add',
       payload: params
+    });
+    return data;
+  }
+
+  async delete(params: deleteParams) {
+    const { resId: res_id } = params;
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const data = await client.request({
+      method: 'delete',
+      headers: {},
+      path: '/resource/del',
+      payload: { res_id }
     });
     return data;
   }
