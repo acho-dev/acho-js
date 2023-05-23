@@ -112,6 +112,8 @@ const resourceResp = await AchoInstance.ResourceEndpoints.create({ name: 'test' 
 */
 ```
 
+---
+
 Create a table in a resource
 
 ```js
@@ -131,6 +133,8 @@ const resourceTableResp = await AchoInstance.ResourceEndpoints.createTable({
    }
 */
 ```
+
+---
 
 Stream data into a table
 
@@ -177,6 +181,29 @@ await new Promise((resolve) => {
 
 > **Note:** You can also pipe readable stream into the writableStream created from a resource table\
 > The supported formats are CSV and NDJSON.
+
+---
+
+Stream data out from the table
+
+```js
+// create readable stream
+const readableStream = await AchoInstance.ResourceEndpoints.createReadStream({
+  resId: testResId,
+  tableId: 'test'
+});
+
+readableStream
+  .on('data', (data) => {
+    // do something here with the data
+    // data: object
+  })
+  .on('end', () => {
+    readableStream.destroy();
+  });
+```
+
+---
 
 ## Use Cases
 
@@ -237,3 +264,5 @@ After finishing the previous steps, if you add "Test Table" from Resource "Test 
 
 <img src="
 https://storage.googleapis.com/acho-prod-assets/sdk/write_data_example_result.png" width="360" style="padding-left: 48px"/>
+
+---
