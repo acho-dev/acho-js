@@ -4,6 +4,8 @@ import { ClientOptions } from './types';
 import { Readable, Transform, TransformCallback } from 'stream';
 import createError from 'http-errors';
 
+const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
 export interface createParams {
   name: string;
 }
@@ -310,7 +312,7 @@ export class ResourceEndpoints {
    * @param {number} params.maxWaitTime - the maximum time in milliseconds to wait from the write job to complete, default to 60000 milliseconds
    * @returns
    */
-  createWriteStream(params: createWriteStreamParams) {
+  async createWriteStream(params: createWriteStreamParams) {
     const client: AchoClient = new AchoClient(this.clientOpt);
     const httpRequest: ClientRequest = client.httpRequest({
       method: 'post',
@@ -318,21 +320,7 @@ export class ResourceEndpoints {
       path: `/resource/create-write-stream`
     });
     httpRequest.write(JSON.stringify({ body: params }));
-    // httpRequest.once('response', (resp) => {
-    //   if (resp?.statusCode) {
-    //     if (resp.statusCode >= 400) {
-    //       if (resp.statusCode === 401) {
-    //         httpRequest.emit('error', createError(resp.statusCode, 'Unauthorized'));
-    //       } else if (resp.statusCode === 403) {
-    //         httpRequest.emit('error', createError(resp.statusCode, 'Access denied'));
-    //       } else {
-    //         httpRequest.emit('error', createError(resp.statusCode, 'Error'));
-    //       }
-    //     }
-    //   } else {
-    //     httpRequest.emit('error', Error('Unknown'));
-    //   }
-    // });
+    await wait(100);
     return httpRequest;
   }
 }

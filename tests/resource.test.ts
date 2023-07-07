@@ -33,7 +33,7 @@ describe('test resource: create', () => {
   });
 
   test('insert rows with resId, tableId and json string', async () => {
-    const writableStream = AchoInstance.ResourceEndpoints.createWriteStream({
+    const writableStream = await AchoInstance.ResourceEndpoints.createWriteStream({
       resId: testResId,
       tableId: 'test',
       dataType: 'json'
@@ -62,7 +62,7 @@ describe('test resource: create', () => {
   });
 
   test('insert rows with resId, tableId and csv rows', async () => {
-    const writableStream = AchoInstance.ResourceEndpoints.createWriteStream({
+    const writableStream = await AchoInstance.ResourceEndpoints.createWriteStream({
       resId: testResId,
       tableId: 'test',
       dataType: 'csv'
@@ -443,14 +443,18 @@ describe('test resource:createReadStream', () => {
   }, 20000);
 });
 
-describe.skip('test resource:createWriteStream', () => {
+describe('test resource:createWriteStream', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.ACHO_TOKEN,
     endpoint: process.env.ACHO_API_ENDPOINT ? process.env.ACHO_API_ENDPOINT : 'http://localhost:8888'
   });
 
   test('insert rows with resId and csv string', async () => {
-    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679, dataType: 'csv', hasHeader: false });
+    const httpRequest = await AchoInstance.ResourceEndpoints.createWriteStream({
+      resId: 4679,
+      dataType: 'csv',
+      hasHeader: false
+    });
     // TODO: do we have to remove the rows added by test?
     await new Promise((resolve) => {
       for (let i = 0; i < 10; i++) {
@@ -467,7 +471,7 @@ describe.skip('test resource:createWriteStream', () => {
   });
 
   test('insert rows with resId and json string', async () => {
-    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679, dataType: 'json' });
+    const httpRequest = await AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679, dataType: 'json' });
     await new Promise((resolve) => {
       for (let i = 0; i < 5; i++) {
         httpRequest.write(
@@ -489,7 +493,7 @@ describe.skip('test resource:createWriteStream', () => {
   });
 
   test('insert rows with assetId and json file', async () => {
-    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'json' });
+    const httpRequest = await AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'json' });
     await new Promise((resolve) => {
       // NOTE: json should be in newline-delimited format
       fs.createReadStream('./tests/data/res_4679_data.ndjson').pipe(httpRequest);
@@ -508,7 +512,7 @@ describe.skip('test resource:createWriteStream', () => {
     };
     const AchoInstanceNoAuth = new Acho(opts);
 
-    const httpRequest = AchoInstanceNoAuth.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'json' });
+    const httpRequest = await AchoInstanceNoAuth.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'json' });
     httpRequest.on('error', (err) => {});
     await new Promise((resolve) => {
       // NOTE: json should be in newline-delimited format
@@ -522,7 +526,11 @@ describe.skip('test resource:createWriteStream', () => {
   });
 
   test('insert rows with assetId and csv file', async () => {
-    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'csv', hasHeader: true });
+    const httpRequest = await AchoInstance.ResourceEndpoints.createWriteStream({
+      assetId: 9297,
+      dataType: 'csv',
+      hasHeader: true
+    });
     await new Promise((resolve) => {
       // NOTE: json should be in newline-delimited format
       fs.createReadStream('./tests/data/res_4679_data.csv').pipe(httpRequest);
@@ -535,7 +543,11 @@ describe.skip('test resource:createWriteStream', () => {
   });
 
   test('error handling - insert rows with invalid data type', async () => {
-    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679, dataType: 'csv', hasHeader: false });
+    const httpRequest = await AchoInstance.ResourceEndpoints.createWriteStream({
+      resId: 4679,
+      dataType: 'csv',
+      hasHeader: false
+    });
     await new Promise((resolve) => {
       httpRequest.write(`CSV_${Date.now()},AAA,2020-07-06T13:50:03,2020-07-06T13:50:03\n`);
       httpRequest.end();
@@ -551,7 +563,11 @@ describe.skip('test resource:createWriteStream', () => {
   });
 
   test('error handling - insert rows with invalid data format', async () => {
-    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ resId: 4679, dataType: 'csv', hasHeader: false });
+    const httpRequest = await AchoInstance.ResourceEndpoints.createWriteStream({
+      resId: 4679,
+      dataType: 'csv',
+      hasHeader: false
+    });
     await new Promise((resolve) => {
       httpRequest.write(`CSV_${Date.now()},5000,2020-07-06T13:50:03,2020-07-06T13:50:03,aaaa\n`);
       httpRequest.end();
@@ -567,7 +583,11 @@ describe.skip('test resource:createWriteStream', () => {
   });
 
   test.skip('insert rows with with large files', async () => {
-    const httpRequest = AchoInstance.ResourceEndpoints.createWriteStream({ assetId: 9297, dataType: 'json', maxWaitTime: 5000 });
+    const httpRequest = await AchoInstance.ResourceEndpoints.createWriteStream({
+      assetId: 9297,
+      dataType: 'json',
+      maxWaitTime: 5000
+    });
     await new Promise((resolve) => {
       // NOTE: json should be in newline-delimited format
       fs.createReadStream('./tests/data/res_4679_data_big').pipe(httpRequest);
