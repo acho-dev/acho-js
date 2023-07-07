@@ -140,7 +140,7 @@ Stream data into a table
 
 ```js
 // JSON flavor
-const writableStream = AchoInstance.ResourceEndpoints.createWriteStream({
+const writableStream = await AchoInstance.ResourceEndpoints.createWriteStream({
   resId: testResId,
   tableId: 'test',
   dataType: 'json'
@@ -163,7 +163,7 @@ await new Promise((resolve) => {
 });
 
 // CSV flavor
-const writableStream = AchoInstance.ResourceEndpoints.createWriteStream({
+const writableStream = await AchoInstance.ResourceEndpoints.createWriteStream({
   resId: testResId,
   tableId: 'test',
   dataType: 'csv'
@@ -234,7 +234,7 @@ Write data to the resource table (in this example we are using JSON)
 
 ```js
 const writeData = async () => {
-  const writableStream = AchoInstance.ResourceEndpoints.createWriteStream({
+  const writableStream = await AchoInstance.ResourceEndpoints.createWriteStream({
     // replace 1234 with the id you captured earlier
     resId: 1234,
     tableId: 'Test Table',
