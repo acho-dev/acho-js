@@ -30,7 +30,7 @@ describe('test project endpoints', () => {
     // ! Using a different token
     const data = await AchoInstance.ProjectEndpoints.queryTableData({
       actionQuery: {
-        query: 'SELECT * FROM {{{P.9038}}} LIMIT 2;',
+        query: 'SELECT * FROM {{{P.9038}}};',
         helperInfo: {
           resources: [],
           projects: [],
