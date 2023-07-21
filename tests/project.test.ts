@@ -25,4 +25,31 @@ describe('test project endpoints', () => {
 
     expect(data.data.length).toBeLessThanOrEqual(100);
   });
+
+  it('query project table with default page size', async () => {
+    // ! Using a different token
+    const data = await AchoInstance.ProjectEndpoints.queryTableData({
+      actionQuery: {
+        query: 'SELECT * FROM {{{P.9038}}} LIMIT 2;',
+        helperInfo: {
+          resources: [],
+          projects: [],
+          views: [
+            {
+              view: {
+                id: 9038,
+                proj_id: 2937
+              }
+            }
+          ]
+        }
+      }
+    });
+    expect(data).toBeInstanceOf(Object);
+    expect(data).toHaveProperty('data');
+    expect(data).toHaveProperty('schema');
+    expect(data).toHaveProperty('paging');
+
+    expect(data.data.length).toBeLessThanOrEqual(100);
+  });
 });
