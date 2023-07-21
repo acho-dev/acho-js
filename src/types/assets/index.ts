@@ -1,5 +1,5 @@
 import { ResourceHelperInfo } from './resource';
-import { ProjectHelperInfo } from './project';
+import { ProjectHelperInfo, ViewHelperInfo } from './project';
 
 export * from './resource';
 export * from './project';
@@ -13,4 +13,5 @@ export interface ActionQuery {
 export interface HelperInfo {
   resources: Array<ResourceHelperInfo>;
   projects: Array<ProjectHelperInfo>;
+  views?: Array<ViewHelperInfo>;
 }
