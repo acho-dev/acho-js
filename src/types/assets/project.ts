@@ -13,14 +13,22 @@ export interface View {
 
 export interface ProjectHelperInfo {}
 
+export interface ViewHelperInfo {
+  view: Object;
+}
+
 export interface ProjectTableDataResp {
   data: Array<Object>;
-  schema: {
-    fields: Record<string, string>[];
-  };
+  schema: ProjectTableSchemaResp;
   paging: {
     page: number;
     pageSize: number;
     pageTotal: number;
+    pageToken?: string;
   };
+  jobId?: string;
+}
+
+export interface ProjectTableSchemaResp {
+  fields: Record<string, string>[];
 }
