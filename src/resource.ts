@@ -37,6 +37,11 @@ export interface createTableParams {
   schema: Record<string, colType>;
 }
 
+export interface deleteTableParams {
+  resId: number;
+  tableName: string;
+}
+
 export interface getTableDataParams {
   assetId?: number;
   resId?: number;
@@ -121,6 +126,17 @@ export class ResourceEndpoints {
       method: 'post',
       headers: {},
       path: '/integration/tables/add',
+      payload: params
+    });
+    return data;
+  }
+
+  async deleteTable(params: deleteTableParams) {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const data = await client.request({
+      method: 'post',
+      headers: {},
+      path: '/integration/tables/delete',
       payload: params
     });
     return data;
