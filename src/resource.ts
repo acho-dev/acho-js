@@ -35,6 +35,7 @@ export interface createTableParams {
   resId: number;
   tableName: string;
   schema: Record<string, colType>;
+  merge?: boolean;
 }
 
 export interface deleteTableParams {
@@ -338,5 +339,77 @@ export class ResourceEndpoints {
     httpRequest.write(JSON.stringify({ body: params }));
     await wait(100);
     return httpRequest;
+  }
+
+  async getResourceDataProducer(params: getTableDataParams) {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    return new ResourceDataProducer(client, params);
+  }
+}
+
+class ResourceDataProducer {
+  private client: AchoClient;
+  private assetId?: number;
+  private resId?: number;
+  private tableId?: string;
+  private pageSize?: number;
+  private page?: number = 0;
+  private pageTotal?: number = -1;
+  constructor(client: AchoClient, params: getTableDataParams) {
+    this.client = client;
+    this.assetId = params.assetId;
+    this.resId = params.resId;
+    this.tableId = params.tableId; // when the resource is of type "integration", a tableId is required
+    this.pageSize = params.pageSize;
+  }
+
+  async preview() {
+    const data: ResourceTableDataResp = await this.client.request({
+      method: 'post',
+      headers: {},
+      path: '/resource/get-data',
+      payload: {
+        assetId: this.assetId,
+        resId: this.resId,
+        tableId: this.tableId,
+        page: this.page,
+        pageSize: this.pageSize
+      }
+    });
+    if (!this.pageTotal || this.pageTotal < 0) {
+      this.pageTotal = data?.paging?.pageTotal;
+    }
+    return data;
+  }
+
+  async get() {
+    const resp: ResourceTableDataResp = await this.client.request({
+      method: 'post',
+      headers: {},
+      path: '/resource/get-data',
+      payload: {
+        assetId: this.assetId,
+        resId: this.resId,
+        tableId: this.tableId,
+        page: this.page,
+        pageSize: this.pageSize
+      }
+    });
+
+    if (!this.pageTotal || this.pageTotal < 0) {
+      this.pageTotal = resp?.paging?.pageTotal;
+    }
+    this.page = (resp?.paging?.page || 0) + 1;
+
+    return resp.data;
+  }
+
+  hasNext() {
+    console.log('page', this.page, 'pageTotal', this.pageTotal);
+    if (!this.pageTotal || this.pageTotal < 0) {
+      return true;
+    }
+    console.log('page < pageTotal', (this.page || 0) < this.pageTotal);
+    return (this.page || 0) < this.pageTotal;
   }
 }

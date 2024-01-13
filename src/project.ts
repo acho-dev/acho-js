@@ -52,4 +52,73 @@ export class ProjectEndpoints {
     });
     return data;
   }
+
+  async getViewDataProducer(params: getViewDataParams) {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    return new ViewDataProducer(client, params);
+  }
+}
+
+class ViewDataProducer {
+  private client: AchoClient;
+  private assetId?: number;
+  private viewId?: number;
+  private pageSize?: number;
+  private page?: number = 0;
+  private pageTotal?: number = -1;
+  constructor(client: AchoClient, params: getViewDataParams) {
+    this.client = client;
+    this.assetId = params.assetId;
+    this.viewId = params.viewId;
+    this.pageSize = params.pageSize;
+  }
+
+  async preview() {
+    let page = 0;
+    const data: ProjectTableDataResp = await this.client.request({
+      method: 'post',
+      headers: {},
+      path: '/project/get-view-data',
+      payload: {
+        assetId: this.assetId,
+        viewId: this.viewId,
+        page: page,
+        pageSize: this.pageSize
+      }
+    });
+    if (!this.pageTotal || this.pageTotal < 0) {
+      this.pageTotal = data?.paging?.pageTotal;
+    }
+    return data;
+  }
+
+  async get() {
+    const resp: ProjectTableDataResp = await this.client.request({
+      method: 'post',
+      headers: {},
+      path: '/project/get-view-data',
+      payload: {
+        assetId: this.assetId,
+        viewId: this.viewId,
+        page: this.page,
+        pageSize: this.pageSize
+      }
+    });
+
+    if (!this.pageTotal || this.pageTotal < 0) {
+      this.pageTotal = resp?.paging?.pageTotal;
+    }
+    this.page = (resp?.paging?.page || 0) + 1;
+
+    return resp.data;
+  }
+
+  hasNext() {
+    console.log('page', this.page, 'pageTotal', this.pageTotal);
+    if (!this.pageTotal || this.pageTotal < 0) {
+      return true;
+    }
+    console.log('page < pageTotal', (this.page || 0) < this.pageTotal);
+    return (this.page || 0) < this.pageTotal;
+  }
 }
