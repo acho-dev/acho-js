@@ -1,4 +1,4 @@
-import axios, { AxiosStatic, ResponseType } from 'axios';
+import axios, { AxiosError, AxiosStatic, ResponseType } from 'axios';
 import { request } from 'http';
 import createHttpError from 'http-errors';
 import url from 'url';
@@ -13,7 +13,7 @@ export interface AuthHeader {
 }
 
 export interface RequestOptions {
-  method: 'post' | 'get';
+  method: 'post' | 'get' | 'put' | 'delete';
   headers: Record<string, any>;
   path: string;
   payload?: Record<string, any>;
@@ -48,19 +48,44 @@ export class AchoClient {
         Object.assign(config, axiosSettings);
         console.log(config);
       }
-      const response = await this.axios(config).catch((error) => {
-        if (error.response) {
-          throw createHttpError(error.response.status, error.response.data);
-        } else if (error.request) {
-          throw createHttpError(400, error.request);
+
+      try {
+        const response = await this.axios.request(config);
+
+        return response?.data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            throw createHttpError(error.response.status, {
+              headers: error.response.headers as any,
+              status: error.response.status,
+              data: error.response.data
+            });
+          } else if (error.request) {
+            throw createHttpError(400, error.request);
+          } else {
+            throw createHttpError(400, error.message);
+          }
+        } else if (error instanceof Error) {
+          throw error;
         } else {
-          throw createHttpError(400, error.message);
+          throw error;
         }
-      });
-      if (response) {
-        const { data } = response;
-        return data;
       }
+
+      // const response = await this.axios(config).catch((error) => {
+      //   if (error.response) {
+      //     throw createHttpError(error.response.status, error.response.data);
+      //   } else if (error.request) {
+      //     throw createHttpError(400, error.request);
+      //   } else {
+      //     throw createHttpError(400, error.message);
+      //   }
+      // });
+      // if (response) {
+      //   const { data } = response;
+      //   return data;
+      // }
     } catch (error) {
       console.log(error);
       throw error;
