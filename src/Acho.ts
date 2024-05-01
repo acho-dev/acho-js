@@ -4,6 +4,7 @@ import { ProjectEndpoints } from './project';
 import { OAuthEndpoints } from './auth';
 import { App } from './app';
 import { BusinessObject } from './businessObject';
+import { AutomationClient } from './automationClient';
 
 const defaultClientOpt = {
   apiToken: process.env.ACHO_TOKEN,
@@ -29,6 +30,10 @@ export default class Acho {
 
   public businessObject(bizObjClientOpt: Record<string, any>, achoClientOpt: ClientOptions = this.clientOpt) {
     return new BusinessObject(bizObjClientOpt, achoClientOpt);
+  }
+
+  public automationClient(autoClientOpt: Record<string, any>, achoClientOpt: ClientOptions = this.clientOpt) {
+    return new AutomationClient(autoClientOpt, achoClientOpt);
   }
 }
 
