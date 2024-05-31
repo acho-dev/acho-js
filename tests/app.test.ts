@@ -6,33 +6,11 @@ describe('test App endpoints', () => {
     endpoint: process.env.ACHO_API_ENDPOINT ? process.env.ACHO_API_ENDPOINT : 'http://localhost:8888'
   });
 
-  it('init app', async () => {
-    const appInstance = AchoInstance.app('328');
-    expect(appInstance).toBeInstanceOf(Object);
-    const metadata = await appInstance.init();
-  });
-
-  it('validate app version', async () => {
-    const appInstance = AchoInstance.app('328');
-    expect(appInstance).toBeInstanceOf(Object);
-    const metadata = await appInstance.init();
-    const appVersionInstance = await appInstance.version('352');
-    appVersionInstance.disconnect();
-  });
-
-  it('test app version room', async () => {
-    const appInstance = AchoInstance.app('328');
-    expect(appInstance).toBeInstanceOf(Object);
-    // console.log(appInstance);
-    const metadata = await appInstance.init();
-    const appVersionInstance = await appInstance.version('352');
-    // console.log(appVersionInstance);
-    const joined = await appVersionInstance.join();
-    // console.log(joined);
-    expect(joined).toEqual('joined');
-    const left = await appVersionInstance.leave();
-    // console.log(left);
-    expect(left).toEqual('left');
-    appVersionInstance.disconnect();
+  it('test retrieve', async () => {
+    const appUsers = AchoInstance.appUsers();
+    expect(appUsers).toBeInstanceOf(Object);
+    const firstPage = await appUsers.retrieve();
+    console.log(firstPage);
+    expect(firstPage).toBeInstanceOf(Object);
   });
 });
