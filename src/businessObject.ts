@@ -1,7 +1,12 @@
 import _ from 'lodash';
-
+import { ClientRequest } from 'http';
 import { AchoClient } from '.';
 import { ClientOptions, RequestOptions } from './types';
+
+export interface createBizObjWriteStreamParams {
+  tableName: string;
+  maxWaitTime?: number; // in milliseconds
+}
 
 export class BusinessObject {
   public achoClientOpt: ClientOptions;
@@ -106,5 +111,16 @@ export class BusinessObject {
     const reqResp = await achoClient.request(reqConfig);
 
     return reqResp;
+  }
+
+  createWriteStream() {
+    const client: AchoClient = new AchoClient(this.achoClientOpt);
+    const httpRequest: ClientRequest = client.httpRequest({
+      method: 'post',
+      headers: {},
+      path: `/erp/object/create-write-stream`
+    });
+    httpRequest.write(JSON.stringify({ body: { tableName: this.tableName } }));
+    return httpRequest;
   }
 }
