@@ -8,6 +8,7 @@ import { AutomationClient } from './automationClient';
 import { AppUsers } from './appUser';
 import {
   BasicStreamer,
+  AsyncStreamer,
   RuleBasedTransformationProvider,
   CustomTransformationProvider,
   DefaultTransformationProvider
@@ -54,6 +55,7 @@ export {
   OAuthEndpoints,
   App,
   BasicStreamer,
+  AsyncStreamer,
   RuleBasedTransformationProvider,
   CustomTransformationProvider,
   DefaultTransformationProvider

@@ -1,9 +1,16 @@
 import {
   BasicStreamer,
+  AsyncStreamer,
   RuleBasedTransformationProvider,
   CustomTransformationProvider,
   DefaultTransformationProvider,
   flattenObject
 } from './stream/base';
 
-export { BasicStreamer, RuleBasedTransformationProvider, CustomTransformationProvider, DefaultTransformationProvider };
+export {
+  BasicStreamer,
+  AsyncStreamer,
+  RuleBasedTransformationProvider,
+  CustomTransformationProvider,
+  DefaultTransformationProvider
+};
