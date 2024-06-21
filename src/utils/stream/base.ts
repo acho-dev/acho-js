@@ -12,6 +12,10 @@ class AbstractTransformationProvider {
   _transform(record: Record<string, any>): Record<string, any> {
     throw new Error('Not implemented');
   }
+
+  async _transformAsync(record: Record<string, any>): Promise<Record<string, any>> {
+    throw new Error('Not implemented');
+  }
 }
 
 class RuleBasedTransformationProvider extends AbstractTransformationProvider {
@@ -26,6 +30,12 @@ class RuleBasedTransformationProvider extends AbstractTransformationProvider {
       return rule(acc);
     }, record);
   }
+
+  _transformAsync(record: Record<string, any>): Promise<Record<string, any>> {
+    return this.rules.reduce(async (acc: any, rule: (arg0: any) => any) => {
+      return rule(await acc);
+    }, Promise.resolve(record));
+  }
 }
 
 class CustomTransformationProvider extends AbstractTransformationProvider {
@@ -36,6 +46,10 @@ class CustomTransformationProvider extends AbstractTransformationProvider {
   }
   // Custom transformation logic
   _transform(record: any) {
+    return this.customTransform(record);
+  }
+
+  async _transformAsync(record: Record<string, any>): Promise<Record<string, any>> {
     return this.customTransform(record);
   }
 }
@@ -50,7 +64,7 @@ class DefaultTransformationProvider extends AbstractTransformationProvider {
 class BasicStreamer extends EventEmitter {
   transformationProvider: DefaultTransformationProvider;
   _transform: (record: any) => Record<string, any>;
-  constructor(transformationProvider = new DefaultTransformationProvider()) {
+  constructor(transformationProvider: any = new DefaultTransformationProvider()) {
     super();
     this.transformationProvider = transformationProvider;
     this._transform = this.transformationProvider._transform.bind(this.transformationProvider);
@@ -72,6 +86,31 @@ class BasicStreamer extends EventEmitter {
   }
 }
 
+class AsyncStreamer extends EventEmitter {
+  transformationProvider: any;
+  _transformAsync: (record: any) => Promise<Record<string, any>>;
+  constructor(transformationProvider: any = new DefaultTransformationProvider()) {
+    super();
+    this.transformationProvider = transformationProvider;
+    this._transformAsync = this.transformationProvider._transformAsync.bind(this.transformationProvider);
+  }
+
+  async _feed(record: any) {
+    const transformedRecord = await this._transformAsync(record);
+    if (transformedRecord?.length) {
+      transformedRecord.forEach((record: any) => {
+        this.emit('data', record);
+      });
+    }
+    this.emit('data', transformedRecord);
+  }
+
+  setTransformationProvider(provider: any) {
+    this.transformationProvider = provider;
+    this._transformAsync = this.transformationProvider._transformAsync.bind(this.transformationProvider);
+  }
+}
+
 function flattenObject(obj: { [x: string]: any }, prefix = '', res: Record<string, any> = {}) {
   for (const key in obj) {
     if (typeof obj[key] === 'object' && !Array.isArray(obj[key]) && obj[key] !== null) {
@@ -85,6 +124,7 @@ function flattenObject(obj: { [x: string]: any }, prefix = '', res: Record<strin
 
 export {
   BasicStreamer,
+  AsyncStreamer,
   RuleBasedTransformationProvider,
   CustomTransformationProvider,
   DefaultTransformationProvider,
