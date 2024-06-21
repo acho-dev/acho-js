@@ -9,6 +9,7 @@ export {
   ResourceEndpoints,
   ProjectEndpoints,
   BasicStreamer,
+  AsyncStreamer,
   RuleBasedTransformationProvider,
   CustomTransformationProvider,
   DefaultTransformationProvider
