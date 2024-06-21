@@ -6,6 +6,12 @@ import { App } from './app';
 import { BusinessObject } from './businessObject';
 import { AutomationClient } from './automationClient';
 import { AppUsers } from './appUser';
+import {
+  BasicStreamer,
+  RuleBasedTransformationProvider,
+  CustomTransformationProvider,
+  DefaultTransformationProvider
+} from './utils';
 
 const defaultClientOpt = {
   apiToken: process.env.ACHO_TOKEN,
@@ -42,4 +48,13 @@ export default class Acho {
   }
 }
 
-export { ResourceEndpoints, ProjectEndpoints, OAuthEndpoints, App };
+export {
+  ResourceEndpoints,
+  ProjectEndpoints,
+  OAuthEndpoints,
+  App,
+  BasicStreamer,
+  RuleBasedTransformationProvider,
+  CustomTransformationProvider,
+  DefaultTransformationProvider
+};

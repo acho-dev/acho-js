@@ -4,4 +4,12 @@ const packageJson = require('../package.json');
 pleaseUpgradeNode(packageJson);
 
 export * from './types';
-export { default as Acho, ResourceEndpoints, ProjectEndpoints } from './Acho';
+export {
+  default as Acho,
+  ResourceEndpoints,
+  ProjectEndpoints,
+  BasicStreamer,
+  RuleBasedTransformationProvider,
+  CustomTransformationProvider,
+  DefaultTransformationProvider
+} from './Acho';
