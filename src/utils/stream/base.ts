@@ -26,15 +26,25 @@ class RuleBasedTransformationProvider extends AbstractTransformationProvider {
   }
   // Rule-based transformation logic
   _transform(record: any) {
-    return this.rules.reduce((acc: any, rule: (arg0: any) => any) => {
-      return rule(acc);
-    }, record);
+    for (const rule of this.rules) {
+      const result = rule(record);
+      if (!result) {
+        return result;
+      }
+      record = result;
+    }
+    return record;
   }
 
   async _transformAsync(record: Record<string, any>): Promise<Record<string, any>> {
-    return this.rules.reduce(async (acc: any, rule: (arg0: any) => any) => {
-      return rule(await acc);
-    }, Promise.resolve(record));
+    for (const rule of this.rules) {
+      const result = await rule(record);
+      if (!result) {
+        return result;
+      }
+      record = result;
+    }
+    return record;
   }
 }
 
@@ -76,7 +86,7 @@ class BasicStreamer extends EventEmitter {
       transformedRecord.forEach((record: any) => {
         this.emit('data', record);
       });
-    } else {
+    } else if (transformedRecord) {
       this.emit('data', transformedRecord);
     }
   }
@@ -102,7 +112,7 @@ class AsyncStreamer extends EventEmitter {
       transformedRecord.forEach((record: any) => {
         this.emit('data', record);
       });
-    } else {
+    } else if (transformedRecord) {
       this.emit('data', transformedRecord);
     }
   }
