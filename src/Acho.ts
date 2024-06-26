@@ -3,6 +3,16 @@ import { ResourceEndpoints } from './resource';
 import { ProjectEndpoints } from './project';
 import { OAuthEndpoints } from './auth';
 import { App } from './app';
+import { BusinessObject } from './businessObject';
+import { AutomationClient } from './automationClient';
+import { AppUsers } from './appUser';
+import {
+  BasicStreamer,
+  AsyncStreamer,
+  RuleBasedTransformationProvider,
+  CustomTransformationProvider,
+  DefaultTransformationProvider
+} from './utils';
 
 const defaultClientOpt = {
   apiToken: process.env.ACHO_TOKEN,
@@ -25,6 +35,28 @@ export default class Acho {
   public app(id: string, clientOpt: ClientOptions = this.clientOpt) {
     return new App(id, clientOpt);
   }
+
+  public appUsers(clientOpt: ClientOptions = this.clientOpt) {
+    return new AppUsers(clientOpt);
+  }
+
+  public businessObject(bizObjClientOpt: Record<string, any>, achoClientOpt: ClientOptions = this.clientOpt) {
+    return new BusinessObject(bizObjClientOpt, achoClientOpt);
+  }
+
+  public automationClient(autoClientOpt: Record<string, any>, achoClientOpt: ClientOptions = this.clientOpt) {
+    return new AutomationClient(autoClientOpt, achoClientOpt);
+  }
 }
 
-export { ResourceEndpoints, ProjectEndpoints, OAuthEndpoints, App };
+export {
+  ResourceEndpoints,
+  ProjectEndpoints,
+  OAuthEndpoints,
+  App,
+  BasicStreamer,
+  AsyncStreamer,
+  RuleBasedTransformationProvider,
+  CustomTransformationProvider,
+  DefaultTransformationProvider
+};
