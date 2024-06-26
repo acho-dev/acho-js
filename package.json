@@ -1,6 +1,6 @@
 {
   "name": "@acho-inc/acho-js",
-  "version": "1.5.8",
+  "version": "1.6.0",
   "description": "Acho Javascript SDK",
   "main": "dist/index.js",
   "scripts": {
