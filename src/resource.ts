@@ -121,6 +121,22 @@ export class ResourceEndpoints {
   }
 
   /**
+   * Create a CSV resource from gs path
+   * @param {createParams} params
+   * @param {string} params.gcsFilePath - gcsFilePath in gs:// format
+   */
+  async gsCreate(params: createParams) {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const data = await client.request({
+      method: 'post',
+      headers: {},
+      path: '/resource/add/csv/offline',
+      payload: params
+    });
+    return data;
+  }
+
+  /**
    * Get resource table by page
    * @param {getTableDataParams} params
    * @param {number} params.assetId - either provide a assetId or a resId
