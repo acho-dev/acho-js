@@ -11,6 +11,7 @@ export interface createBizObjWriteStreamParams {
 export class BusinessObject {
   public achoClientOpt: ClientOptions;
   public tableName: string;
+  public moduleId?: string;
 
   constructor(bizObjOpt: Record<string, any>, achoClientOpt?: ClientOptions) {
     this.achoClientOpt = {
@@ -22,6 +23,27 @@ export class BusinessObject {
       throw new Error('Missing table name');
     }
     this.tableName = bizObjOpt.tableName;
+  }
+
+  public setModuleId(moduleId: string) {
+    this.moduleId = moduleId;
+  }
+
+  public async createObject(params: Record<string, any> = {}) {
+    const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
+    const reqConfig: RequestOptions = {
+      method: 'post',
+      path: '/erp/object/install',
+      headers: {},
+      payload: {
+        moduleId: this.moduleId,
+        tableName: this.tableName,
+        tableDisplayName: this.tableName,
+        tableColumns: {}
+      }
+    };
+    const reqResp = await achoClient.request(reqConfig);
+    return reqResp;
   }
 
   public async getObject(params: Record<string, any> = {}) {
@@ -113,14 +135,14 @@ export class BusinessObject {
     return reqResp;
   }
 
-  createWriteStream() {
+  createWriteStream(options: any) {
     const client: AchoClient = new AchoClient(this.achoClientOpt);
     const httpRequest: ClientRequest = client.httpRequest({
       method: 'post',
       headers: {},
       path: `/erp/object/create-write-stream`
     });
-    httpRequest.write(JSON.stringify({ body: { tableName: this.tableName } }));
+    httpRequest.write(JSON.stringify({ body: { tableName: this.tableName, options } }));
     return httpRequest;
   }
 }
