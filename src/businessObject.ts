@@ -29,6 +29,18 @@ export class BusinessObject {
     this.moduleId = moduleId;
   }
 
+  public async listModules() {
+    const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
+    const reqConfig: RequestOptions = {
+      method: 'post',
+      path: '/erp/module/list',
+      headers: {},
+      payload: {}
+    };
+    const reqResp = await achoClient.request(reqConfig);
+    return reqResp;
+  }
+
   public async createObject(params: Record<string, any> = {}) {
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
     const reqConfig: RequestOptions = {
@@ -132,6 +144,51 @@ export class BusinessObject {
     };
     const reqResp = await achoClient.request(reqConfig);
 
+    return reqResp;
+  }
+
+  public async getPrimaryKeys(params: Record<string, any> = {}) {
+    const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
+    const reqConfig: RequestOptions = {
+      method: 'post',
+      path: '/erp/object/get-primary-keys',
+      headers: {},
+      payload: {
+        tableName: this.tableName
+      }
+    };
+  }
+
+  public async setPrimaryKeys(keys: Array<string> = []) {
+    const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
+    const reqConfig: RequestOptions = {
+      method: 'post',
+      path: '/erp/object/set-primary-keys',
+      headers: {},
+      payload: {
+        columnNames: keys,
+        tableName: this.tableName
+      }
+    };
+    const reqResp = await achoClient.request(reqConfig);
+    return reqResp;
+  }
+
+  public async addPrimaryKey(key: string) {
+    if (_.isNil(key)) {
+      throw new Error('Missing key');
+    }
+    const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
+    const reqConfig: RequestOptions = {
+      method: 'post',
+      path: '/erp/object/add-primary-key',
+      headers: {},
+      payload: {
+        columnName: key,
+        tableName: this.tableName
+      }
+    };
+    const reqResp = await achoClient.request(reqConfig);
     return reqResp;
   }
 
