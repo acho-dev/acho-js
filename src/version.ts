@@ -4,11 +4,13 @@ import { App } from './app';
 import { SERVER_ADDRESS, SOCKET_NAMESPACE } from './constants';
 import { Socket, Manager } from 'socket.io-client';
 import { joinAppBuilderRoom, leaveAppBuilderRoom } from './utils/sockets/appRoom';
+import { head } from 'lodash';
 
 export class AppVersion {
   public appId: string;
   public verId: string;
   public metadata: any;
+  public client: AchoClient;
   public clientOpt: ClientOptions;
   public socket?: Socket;
   constructor(appId: string, verId: string, clientOpt?: ClientOptions) {
@@ -18,11 +20,27 @@ export class AppVersion {
       ...clientOpt,
       apiToken: clientOpt?.apiToken || process.env.ACHO_TOKEN
     };
+    this.client = new AchoClient(this.clientOpt);
+  }
+
+  public async enqueueJob(event: Record<string, any>) {
+    const jobPayload = {
+      scope: this.verId,
+      event,
+      audience: 'system'
+    };
+    const queuedJob = await this.client.request({
+      method: 'post',
+      headers: {},
+      path: '/neuron/enqueue',
+      payload: jobPayload
+    });
+    return queuedJob;
   }
 
   public async init() {
-    const client: AchoClient = new AchoClient(this.clientOpt);
-    const verObj = await client.request({
+    this.client = new AchoClient(this.clientOpt);
+    const verObj = await this.client.request({
       method: 'get',
       headers: {},
       path: `/apps/${this.appId}/versions/${this.verId}`

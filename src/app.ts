@@ -4,6 +4,7 @@ import { ClientOptions } from './types';
 import { AppVersion } from './version';
 
 export class App {
+  public client: AchoClient;
   public clientOpt: ClientOptions;
   public appId: string;
   public metadata: any;
@@ -13,6 +14,7 @@ export class App {
       ...clientOpt,
       apiToken: clientOpt?.apiToken || process.env.ACHO_TOKEN
     };
+    this.client = new AchoClient(this.clientOpt);
   }
 
   public async init() {
