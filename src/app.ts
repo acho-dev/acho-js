@@ -34,4 +34,22 @@ export class App {
     await version.init();
     return version;
   }
+
+  public async listVersions() {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const versions = await client.request({
+      method: 'get',
+      headers: {},
+      path: `/apps/${this.appId}/versions`
+    });
+    return versions;
+  }
+
+  public async getPublishedVersion() {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const versions = await this.listVersions();
+    const publishedVersion = versions.find((v: any) => v.status === 'published');
+    const version = await this.version(publishedVersion.id);
+    return version;
+  }
 }
