@@ -4,6 +4,7 @@ import { ClientOptions } from './types';
 import { AppVersion } from './version';
 
 export class App {
+  public client: AchoClient;
   public clientOpt: ClientOptions;
   public appId: string;
   public metadata: any;
@@ -13,6 +14,7 @@ export class App {
       ...clientOpt,
       apiToken: clientOpt?.apiToken || process.env.ACHO_TOKEN
     };
+    this.client = new AchoClient(this.clientOpt);
   }
 
   public async init() {
@@ -30,6 +32,24 @@ export class App {
     const client: AchoClient = new AchoClient(this.clientOpt);
     const version = new AppVersion(this.appId, id, this.clientOpt);
     await version.init();
+    return version;
+  }
+
+  public async listVersions() {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const versions = await client.request({
+      method: 'get',
+      headers: {},
+      path: `/apps/${this.appId}/versions`
+    });
+    return versions;
+  }
+
+  public async getPublishedVersion() {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const versions = await this.listVersions();
+    const publishedVersion = versions.find((v: any) => v.status === 'published');
+    const version = await this.version(publishedVersion.id);
     return version;
   }
 }

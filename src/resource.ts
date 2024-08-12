@@ -171,6 +171,17 @@ export class ResourceEndpoints {
     return data;
   }
 
+  async gsList(params: createParams) {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const data = await client.request({
+      method: 'post',
+      headers: {},
+      path: '/resource/offline/list',
+      payload: params
+    });
+    return data;
+  }
+
   /**
    * Get resource table by page
    * @param {getTableDataParams} params

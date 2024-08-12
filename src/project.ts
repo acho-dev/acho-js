@@ -113,6 +113,27 @@ class ViewDataProducer {
     return resp.data;
   }
 
+  async next() {
+    const resp: ProjectTableDataResp = await this.client.request({
+      method: 'post',
+      headers: {},
+      path: '/project/get-view-data',
+      payload: {
+        assetId: this.assetId,
+        viewId: this.viewId,
+        page: this.page,
+        pageSize: this.pageSize
+      }
+    });
+
+    if (!this.pageTotal || this.pageTotal < 0) {
+      this.pageTotal = resp?.paging?.pageTotal;
+    }
+    this.page = (resp?.paging?.page || 0) + 1;
+
+    return resp.data;
+  }
+
   hasNext() {
     console.log('page', this.page, 'pageTotal', this.pageTotal);
     if (!this.pageTotal || this.pageTotal < 0) {
