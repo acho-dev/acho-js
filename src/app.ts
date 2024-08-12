@@ -2,6 +2,7 @@ import { ClientRequest } from 'http';
 import { AchoClient } from '.';
 import { ClientOptions } from './types';
 import { AppVersion } from './version';
+import axios from 'axios';
 
 export class App {
   public client: AchoClient;
@@ -51,5 +52,63 @@ export class App {
     const publishedVersion = versions.find((v: any) => v.status === 'published');
     const version = await this.version(publishedVersion.id);
     return version;
+  }
+
+  public async discoverServices() {
+    const client: AchoClient = new AchoClient(this.clientOpt);
+    const services = await client.request({
+      method: 'get',
+      headers: {},
+      path: `/neurons/service/discover`
+    });
+    const { data } = services;
+    const { app_version_id, headless, regular } = data;
+    const requests = regular.map((service: any) => {
+      const construct = (payload: Record<string, any>) => {
+        return axios({
+          method: 'post',
+          headers: {
+            Authorization: `jwt ${this.clientOpt.apiToken}`
+          },
+          data: {
+            _id: service._id,
+            app_version_id,
+            payload
+          },
+          url: `${this.client.getBaseUrl()}/neurons/dispatch-service`
+        });
+      };
+      return {
+        id: service._id,
+        construct,
+        inputSchema: service.params,
+        outputSchema: service.response_schema
+      };
+    });
+    const events = headless.map((event: any) => {
+      const construct = (payload: Record<string, any>) => {
+        return axios({
+          method: 'post',
+          headers: {
+            Authorization: `jwt ${this.clientOpt.apiToken}`
+          },
+          data: {
+            scope: app_version_id,
+            event: {
+              type: event.type,
+              payload
+            }
+          },
+          url: `${this.client.getBaseUrl()}/neurons/enqueue`
+        });
+      };
+      return {
+        id: event.type,
+        construct,
+        inputSchema: event.params || {},
+        outputSchema: event.response_schema || {}
+      };
+    });
+    return { ...requests, ...events };
   }
 }

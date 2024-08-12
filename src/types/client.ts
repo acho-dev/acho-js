@@ -109,4 +109,8 @@ export class AchoClient {
     const req = request(reqOptions);
     return req;
   }
+
+  getBaseUrl() {
+    return this.baseUrl;
+  }
 }
