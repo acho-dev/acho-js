@@ -3,6 +3,7 @@ import { AchoClient } from '.';
 import { ClientOptions } from './types';
 import { AppVersion } from './version';
 import axios from 'axios';
+import { get } from 'lodash';
 
 export class App {
   public client: AchoClient;
@@ -50,6 +51,9 @@ export class App {
     const client: AchoClient = new AchoClient(this.clientOpt);
     const versions = await this.listVersions();
     const publishedVersion = versions.find((v: any) => v.status === 'published');
+    if (!publishedVersion) {
+      throw new Error('No published version found');
+    }
     const version = await this.version(publishedVersion.id);
     return version;
   }
@@ -57,15 +61,17 @@ export class App {
   public async discoverServices() {
     const client: AchoClient = new AchoClient(this.clientOpt);
     const services = await client.request({
-      method: 'get',
+      method: 'post',
       headers: {},
-      path: `/neurons/service/discover`
+      path: `/neurons/service/discover`,
+      payload: {
+        appId: this.appId
+      }
     });
-    const { data } = services;
-    const { app_version_id, headless, regular } = data;
-    const requests = regular.map((service: any) => {
-      const construct = (payload: Record<string, any>) => {
-        return axios({
+    const { app_version_id, events: _events, builtins: _builtins, plugins: _plugins } = services;
+    const builtins = _builtins.map((service: any) => {
+      const getConfig = (payload: Record<string, any>) => {
+        return {
           method: 'post',
           headers: {
             Authorization: `jwt ${this.clientOpt.apiToken}`
@@ -76,18 +82,23 @@ export class App {
             payload
           },
           url: `${this.client.getBaseUrl()}/neurons/dispatch-service`
-        });
+        };
+      };
+      const request = (payload: Record<string, any>) => {
+        return axios(getConfig(payload));
       };
       return {
         id: service._id,
-        construct,
+        getConfig,
+        request,
+        class: 'builtin',
         inputSchema: service.params,
         outputSchema: service.response_schema
       };
     });
-    const events = headless.map((event: any) => {
-      const construct = (payload: Record<string, any>) => {
-        return axios({
+    const events = _events.map((event: any) => {
+      const getConfig = (payload: Record<string, any>, options?: Record<string, any>) => {
+        return {
           method: 'post',
           headers: {
             Authorization: `jwt ${this.clientOpt.apiToken}`
@@ -97,18 +108,51 @@ export class App {
             event: {
               type: event.type,
               payload
-            }
+            },
+            ...options
           },
           url: `${this.client.getBaseUrl()}/neurons/enqueue`
-        });
+        };
+      };
+      const request = (payload: Record<string, any>, options?: Record<string, any>) => {
+        return axios(getConfig(payload, options));
       };
       return {
         id: event.type,
-        construct,
+        getConfig,
+        request,
+        class: 'event',
         inputSchema: event.params || {},
         outputSchema: event.response_schema || {}
       };
     });
-    return { ...requests, ...events };
+    const plugins = _plugins.map((plugin: any) => {
+      const getConfig = (payload: Record<string, any>) => {
+        return {
+          method: 'post',
+          headers: {
+            Authorization: `jwt ${this.clientOpt.apiToken}`
+          },
+          data: {
+            _id: plugin.id,
+            app_version_id,
+            payload
+          },
+          url: `${this.client.getBaseUrl()}/neurons/dispatch-service`
+        };
+      };
+      const request = (payload: Record<string, any>) => {
+        return axios(getConfig(payload));
+      };
+      return {
+        id: plugin.id,
+        getConfig,
+        request,
+        class: 'plugin',
+        inputSchema: plugin.parameters,
+        outputSchema: plugin.responseSchema
+      };
+    });
+    return [...builtins, ...events, ...plugins];
   }
 }

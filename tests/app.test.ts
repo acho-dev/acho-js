@@ -20,6 +20,31 @@ describe('test App endpoints', () => {
     appVersionInstance.disconnect();
   });
 
+  it('list app versions', async () => {
+    const appInstance = AchoInstance.app('328');
+    expect(appInstance).toBeInstanceOf(Object);
+    const metadata = await appInstance.init();
+    const versions = await appInstance.listVersions();
+    expect(versions).toBeInstanceOf(Array);
+  });
+
+  it('get published app version', async () => {
+    const appInstance = AchoInstance.app('328');
+    expect(appInstance).toBeInstanceOf(Object);
+    const metadata = await appInstance.init();
+    const publishedVersion = await appInstance.getPublishedVersion();
+    expect(publishedVersion).toBeInstanceOf(Object);
+  });
+
+  it('discover app services', async () => {
+    const appInstance = AchoInstance.app('328');
+    expect(appInstance).toBeInstanceOf(Object);
+    const metadata = await appInstance.init();
+    const services = await appInstance.discoverServices();
+    expect(services).toBeInstanceOf(Object);
+    console.log(services);
+  });
+
   it('test app version room', async () => {
     const appInstance = AchoInstance.app('328');
     expect(appInstance).toBeInstanceOf(Object);
