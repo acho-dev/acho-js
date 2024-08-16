@@ -54,11 +54,16 @@ describe('test App Service provider', () => {
     const metadata = await appInstance.init();
     const _services = await appInstance.discoverServices();
     const auditLogService = _services.find((service) => service.id === 'custom_event');
-    expect(auditLogService).toBeInstanceOf(Object);
-    const payload = {};
     console.log(auditLogService);
+    expect(auditLogService).toBeInstanceOf(Object);
+    const payload = {
+      level: 'info',
+      type: 'audit',
+      message: `Test message from SDK`,
+      metadata: {}
+    };
     console.log(auditLogService.getConfig(payload));
-    const request = await auditLogService.request(payload, { timeout: 1000 });
+    const request = await auditLogService.request(payload);
     console.log(request);
   });
 
@@ -69,9 +74,25 @@ describe('test App Service provider', () => {
     const _services = await appInstance.discoverServices();
 
     const auditLogService = _services.find((service) => service.id === 'custom_event');
+    const auditLogService2 = _services.find((service) => service.id === 'not_custom_event');
+    const auditLogService3 = _services.find((service) => service.id === 'fixed_event');
+    const auditLogService4 = _services.find((service) => service.id === 'rigid_event');
     expect(auditLogService).toBeInstanceOf(Object);
-    const payload = {};
-    const request = await auditLogService.request(payload, { timeout: 1000 });
-    console.log(request);
+    const payload = {
+      level: 'info',
+      type: 'audit',
+      message: `Test message from SDK`,
+      metadata: {}
+    };
+    for (let i = 0; i < 5; i++) {
+      const _payload = {
+        ...payload,
+        message: `Test message from SDK ${i}`
+      };
+      auditLogService.request(_payload, { timeout: 10000 }).then((response: any) => {});
+      auditLogService2.request(_payload, { timeout: 10000 }).then((response: any) => {});
+      auditLogService3.request(_payload, { timeout: 10000 }).then((response: any) => {});
+      auditLogService4.request(_payload, { timeout: 10000 }).then((response: any) => {});
+    }
   });
 });
