@@ -134,11 +134,21 @@ function flattenObject(obj: { [x: string]: any }, prefix = '', res: Record<strin
   return res;
 }
 
+function streamToBuffer(stream: Readable) {
+  return new Promise((resolve, reject) => {
+    const chunks: Uint8Array[] = [];
+    stream.on('data', (chunk) => chunks.push(chunk));
+    stream.on('end', () => resolve(Buffer.concat(chunks)));
+    stream.on('error', (err) => reject(err));
+  });
+}
+
 export {
   BasicStreamer,
   AsyncStreamer,
   RuleBasedTransformationProvider,
   CustomTransformationProvider,
   DefaultTransformationProvider,
-  flattenObject
+  flattenObject,
+  streamToBuffer
 };

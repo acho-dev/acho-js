@@ -12,5 +12,7 @@ export {
   AsyncStreamer,
   RuleBasedTransformationProvider,
   CustomTransformationProvider,
-  DefaultTransformationProvider
+  DefaultTransformationProvider,
+  flattenObject,
+  streamToBuffer
 } from './Acho';

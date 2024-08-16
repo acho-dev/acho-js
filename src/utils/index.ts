@@ -4,7 +4,8 @@ import {
   RuleBasedTransformationProvider,
   CustomTransformationProvider,
   DefaultTransformationProvider,
-  flattenObject
+  flattenObject,
+  streamToBuffer
 } from './stream/base';
 
 export {
@@ -12,5 +13,7 @@ export {
   AsyncStreamer,
   RuleBasedTransformationProvider,
   CustomTransformationProvider,
-  DefaultTransformationProvider
+  DefaultTransformationProvider,
+  flattenObject,
+  streamToBuffer
 };

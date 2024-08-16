@@ -6,13 +6,17 @@ import { App } from './app';
 import { BusinessObject } from './businessObject';
 import { AutomationClient } from './automationClient';
 import { AppUsers } from './appUser';
+import { MediaFile } from './mediaFile';
 import {
   BasicStreamer,
   AsyncStreamer,
   RuleBasedTransformationProvider,
   CustomTransformationProvider,
-  DefaultTransformationProvider
+  DefaultTransformationProvider,
+  flattenObject,
+  streamToBuffer
 } from './utils';
+import { fromPairs } from 'lodash';
 
 const defaultClientOpt = {
   apiToken: process.env.ACHO_TOKEN,
@@ -47,6 +51,10 @@ export default class Acho {
   public automationClient(autoClientOpt: Record<string, any>, achoClientOpt: ClientOptions = this.clientOpt) {
     return new AutomationClient(autoClientOpt, achoClientOpt);
   }
+
+  public mediaFile(mediaFileOpt: Record<string, any>, achoClientOpt: ClientOptions = this.clientOpt) {
+    return new MediaFile(mediaFileOpt, achoClientOpt);
+  }
 }
 
 export {
@@ -54,9 +62,12 @@ export {
   ProjectEndpoints,
   OAuthEndpoints,
   App,
+  MediaFile,
   BasicStreamer,
   AsyncStreamer,
   RuleBasedTransformationProvider,
   CustomTransformationProvider,
-  DefaultTransformationProvider
+  DefaultTransformationProvider,
+  flattenObject,
+  streamToBuffer
 };
