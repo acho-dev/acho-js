@@ -131,6 +131,22 @@ export class BusinessObject {
     return reqResp;
   }
 
+  public async upsertRow(params: Record<string, any> = {}) {
+    const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
+    const reqConfig: RequestOptions = {
+      method: 'post',
+      path: '/erp/object/rows/upsert',
+      headers: {},
+      payload: {
+        ...params,
+        tableName: this.tableName
+      }
+    };
+    const reqResp = await achoClient.request(reqConfig);
+
+    return reqResp;
+  }
+
   public async deleteRow(params: Record<string, any> = {}) {
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
     const reqConfig: RequestOptions = {
@@ -147,23 +163,25 @@ export class BusinessObject {
     return reqResp;
   }
 
-  public async getPrimaryKeys(params: Record<string, any> = {}) {
+  public async getIndices(params: Record<string, any> = {}) {
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
     const reqConfig: RequestOptions = {
       method: 'post',
-      path: '/erp/object/get-primary-keys',
+      path: '/erp/object/columns/get-indices',
       headers: {},
       payload: {
         tableName: this.tableName
       }
     };
+    const reqResp = await achoClient.request(reqConfig);
+    return reqResp;
   }
 
-  public async setPrimaryKeys(keys: Array<string> = []) {
+  public async setIndices(keys: Array<string> = []) {
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
     const reqConfig: RequestOptions = {
       method: 'post',
-      path: '/erp/object/set-primary-keys',
+      path: '/erp/object/columns/set-indices',
       headers: {},
       payload: {
         columnNames: keys,
@@ -174,14 +192,14 @@ export class BusinessObject {
     return reqResp;
   }
 
-  public async addPrimaryKey(key: string) {
+  public async addIndex(key: string) {
     if (_.isNil(key)) {
       throw new Error('Missing key');
     }
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
     const reqConfig: RequestOptions = {
       method: 'post',
-      path: '/erp/object/add-primary-key',
+      path: '/erp/object/columns/add-index',
       headers: {},
       payload: {
         columnName: key,
