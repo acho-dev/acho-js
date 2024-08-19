@@ -77,6 +77,7 @@ export class BusinessObject {
     const {
       columnOptions = { includeCtid: true },
       pageOptions = { pageNumber: 1, pageSize: 100 },
+      filterOptions = {},
       searchOptions = {},
       sortOptions = [{ expr: 'ctid', exprOrder: 'desc', nullOrder: 'last' }]
     } = params;
@@ -90,6 +91,7 @@ export class BusinessObject {
         tableName: this.tableName,
         columnOptions,
         pageOptions,
+        filterOptions,
         searchOptions,
         sortOptions
       }
