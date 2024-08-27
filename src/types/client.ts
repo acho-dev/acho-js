@@ -113,4 +113,7 @@ export class AchoClient {
   getBaseUrl() {
     return this.baseUrl;
   }
+  getAuthHeader() {
+    return this.authHeader;
+  }
 }

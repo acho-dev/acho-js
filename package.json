@@ -23,6 +23,7 @@
   "homepage": "https://github.com/acho-dev/acho-js#readme",
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",
+    "@types/eventsource": "^1.1.15",
     "@types/http-errors": "^1.8.2",
     "@types/jest": "^28.1.6",
     "@types/lodash": "^4.17.0",
@@ -33,6 +34,7 @@
   "dependencies": {
     "axios": "^0.27.2",
     "dotenv": "^16.0.1",
+    "eventsource": "^2.0.2",
     "http-errors": "^2.0.0",
     "lodash": "^4.17.21",
     "please-upgrade-node": "^3.2.0",

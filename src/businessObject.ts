@@ -2,18 +2,22 @@ import _ from 'lodash';
 import { ClientRequest } from 'http';
 import { AchoClient } from '.';
 import { ClientOptions, RequestOptions } from './types';
+import EventSource from 'eventsource';
+import { EventEmitter } from 'stream';
 
 export interface createBizObjWriteStreamParams {
   tableName: string;
   maxWaitTime?: number; // in milliseconds
 }
 
-export class BusinessObject {
+export class BusinessObject extends EventEmitter {
   public achoClientOpt: ClientOptions;
   public tableName: string;
   public moduleId?: string;
+  public eventSource?: EventSource;
 
   constructor(bizObjOpt: Record<string, any>, achoClientOpt?: ClientOptions) {
+    super();
     this.achoClientOpt = {
       ...achoClientOpt,
       apiToken: achoClientOpt?.apiToken || process.env.ACHO_TOKEN
@@ -222,4 +226,73 @@ export class BusinessObject {
     httpRequest.write(JSON.stringify({ body: { tableName: this.tableName, options } }));
     return httpRequest;
   }
+
+  listen(params: Record<string, any> = {}) {
+    const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
+    const sseUrl = `${achoClient.getBaseUrl()}/erp/object/${this.tableName}/listen`;
+    const headers = {
+      ...achoClient.getAuthHeader()
+    };
+    this.eventSource = new EventSource(sseUrl, { headers });
+    this.eventSource.addEventListener('row_inserted', (event: any) => {
+      console.log('row_inserted', event.data);
+      try {
+        const eventData = JSON.parse(event.data);
+        if (!isDuplicateEvent(eventData)) {
+          this.emit('row_inserted', eventData);
+        }
+      } catch (err) {
+        console.error('Error parsing event data');
+        this.emit('error', err);
+      }
+    });
+    this.eventSource.addEventListener('row_updated', (event: any) => {
+      console.log('row_updated', event.data);
+      try {
+        const eventData = JSON.parse(event.data);
+        if (!isDuplicateEvent(eventData)) {
+          this.emit('row_updated', eventData);
+        }
+      } catch (err) {
+        console.error('Error parsing event data');
+        this.emit('error', err);
+      }
+    });
+    this.eventSource.addEventListener('row_deleted', (event: any) => {
+      console.log('row_deleted', event.data);
+      try {
+        const eventData = JSON.parse(event.data);
+        if (!isDuplicateEvent(eventData)) {
+          this.emit('row_deleted', eventData);
+        }
+      } catch (err) {
+        console.error('Error parsing event data');
+        this.emit('error', err);
+      }
+    });
+    return {
+      message: 'Listening for events, use on() to listen for events',
+      supportedEvents: ['row_inserted', 'row_updated', 'row_deleted']
+    };
+  }
+}
+
+const eventCache = new Map<string, number>(); // Declare eventCache variable
+const DEDUPLICATION_INTERVAL = 10000;
+
+function isDuplicateEvent(eventData: any) {
+  const serializedEvent = serializeEvent(eventData);
+  const currentTime = Date.now();
+  if (eventCache.has(serializedEvent)) {
+    const lastEventTime = eventCache.get(serializedEvent);
+    if (lastEventTime !== undefined && currentTime - lastEventTime < DEDUPLICATION_INTERVAL) {
+      return true;
+    }
+  }
+  eventCache.set(serializedEvent, currentTime);
+  return false;
+}
+
+function serializeEvent(eventData: any) {
+  return JSON.stringify(eventData);
 }
