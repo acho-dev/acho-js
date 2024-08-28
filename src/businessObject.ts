@@ -271,6 +271,7 @@ export class BusinessObject extends EventEmitter {
       }
     });
     return {
+      tableName: this.tableName,
       message: 'Listening for events, use on() to listen for events',
       supportedEvents: ['row_inserted', 'row_updated', 'row_deleted']
     };
