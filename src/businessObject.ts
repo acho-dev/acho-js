@@ -235,7 +235,7 @@ export class BusinessObject extends EventEmitter {
     };
     this.eventSource = new EventSource(sseUrl, { headers });
     this.eventSource.addEventListener('row_inserted', (event: any) => {
-      console.log('row_inserted', event.data);
+      // console.log('row_inserted', event.data);
       try {
         const eventData = JSON.parse(event.data);
         if (!isDuplicateEvent(eventData)) {
@@ -247,7 +247,7 @@ export class BusinessObject extends EventEmitter {
       }
     });
     this.eventSource.addEventListener('row_updated', (event: any) => {
-      console.log('row_updated', event.data);
+      // console.log('row_updated', event.data);
       try {
         const eventData = JSON.parse(event.data);
         if (!isDuplicateEvent(eventData)) {
@@ -259,7 +259,7 @@ export class BusinessObject extends EventEmitter {
       }
     });
     this.eventSource.addEventListener('row_deleted', (event: any) => {
-      console.log('row_deleted', event.data);
+      // console.log('row_deleted', event.data);
       try {
         const eventData = JSON.parse(event.data);
         if (!isDuplicateEvent(eventData)) {
