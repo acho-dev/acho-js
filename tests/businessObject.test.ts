@@ -1,6 +1,7 @@
 import _, { last } from 'lodash';
 
 import { Acho } from '../src/index';
+import { BusinessObject } from '../src/businessObject';
 
 describe('test BusinessObject endpoints', () => {
   console.log({
@@ -15,7 +16,7 @@ describe('test BusinessObject endpoints', () => {
 
   it('get obj', async () => {
     const bizObjInstance = AchoInstance.businessObject({ tableName: 'sample_customers' });
-    expect(bizObjInstance).toBeInstanceOf(Object);
+    expect(bizObjInstance).toBeInstanceOf(BusinessObject);
 
     await process.nextTick(() => {});
     const resp = await bizObjInstance.getObject();
@@ -25,7 +26,7 @@ describe('test BusinessObject endpoints', () => {
 
   it('get data', async () => {
     const bizObjInstance = AchoInstance.businessObject({ tableName: 'sample_customers' });
-    expect(bizObjInstance).toBeInstanceOf(Object);
+    expect(bizObjInstance).toBeInstanceOf(BusinessObject);
 
     await process.nextTick(() => {});
     const resp = await bizObjInstance.getData();
@@ -35,7 +36,7 @@ describe('test BusinessObject endpoints', () => {
 
   it('edit row', async () => {
     const bizObjInstance = AchoInstance.businessObject({ tableName: 'sample_customers' });
-    expect(bizObjInstance).toBeInstanceOf(Object);
+    expect(bizObjInstance).toBeInstanceOf(BusinessObject);
 
     await process.nextTick(() => {});
     const timestamp1 = Date.now();
@@ -82,7 +83,7 @@ describe('test BusinessObject endpoints', () => {
 
   it('write stream', async () => {
     const bizObjInstance = AchoInstance.businessObject({ tableName: 'sample_purchase_order_items' });
-    expect(bizObjInstance).toBeInstanceOf(Object);
+    expect(bizObjInstance).toBeInstanceOf(BusinessObject);
 
     await process.nextTick(() => {});
     const bizObj = await bizObjInstance.getObject();
