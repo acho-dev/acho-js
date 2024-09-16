@@ -61,6 +61,7 @@ export {
   ResourceEndpoints,
   ProjectEndpoints,
   OAuthEndpoints,
+  BusinessObject,
   App,
   MediaFile,
   BasicStreamer,

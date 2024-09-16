@@ -10,6 +10,15 @@ describe('test Media File Endpoints', () => {
     endpoint: process.env.ACHO_API_ENDPOINT ? process.env.ACHO_API_ENDPOINT : 'http://localhost:8888'
   });
 
+  it('get file metadata', async () => {
+    const mediaFileInstance = AchoInstance.mediaFile({});
+    expect(mediaFileInstance).toBeInstanceOf(Object);
+
+    const resp = await mediaFileInstance.metadata();
+    expect(resp).toBeInstanceOf(Object);
+    return resp;
+  });
+
   it('get file into buffer', async () => {
     const mediaFileInstance = AchoInstance.mediaFile({});
     expect(mediaFileInstance).toBeInstanceOf(Object);

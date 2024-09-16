@@ -29,6 +29,22 @@ export class MediaFile {
     return reqResp;
   }
 
+  public async metadata(path: string) {
+    const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
+    const reqConfig: RequestOptions = {
+      method: 'post',
+      path: '/uploaded/file/get',
+      headers: {},
+      payload: {
+        file: {
+          path
+        }
+      }
+    };
+    const reqResp = await achoClient.request(reqConfig);
+    return reqResp;
+  }
+
   public async getFileReadStream(params: Record<string, any> = {}) {
     const { path } = params;
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);

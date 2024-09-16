@@ -10,6 +10,7 @@ export {
   ProjectEndpoints,
   BasicStreamer,
   AsyncStreamer,
+  BusinessObject,
   RuleBasedTransformationProvider,
   CustomTransformationProvider,
   DefaultTransformationProvider,
