@@ -14,6 +14,15 @@ describe('test BusinessObject endpoints', () => {
     endpoint: process.env.ACHO_API_ENDPOINT ? process.env.ACHO_API_ENDPOINT : 'http://localhost:8888'
   });
 
+  it('list objects', async () => {
+    const bizObjInstance = AchoInstance.businessObject();
+    expect(bizObjInstance).toBeInstanceOf(BusinessObject);
+
+    await process.nextTick(() => {});
+    const resp = await bizObjInstance.listObjects();
+    expect(_.isArray(resp)).toBe(true);
+  });
+
   it('get obj', async () => {
     const bizObjInstance = AchoInstance.businessObject({ tableName: 'sample_customers' });
     expect(bizObjInstance).toBeInstanceOf(BusinessObject);
@@ -51,7 +60,6 @@ describe('test BusinessObject endpoints', () => {
             type: 'sql',
             value: 'NOW()'
           },
-          none: 'f**k it',
           updated_at: {
             type: 'sql',
             value: 'NOW()'
@@ -59,7 +67,8 @@ describe('test BusinessObject endpoints', () => {
         }
       ]
     });
-    const resp1 = await bizObjInstance.getData();
+    const resp1 = await bizObjInstance.getData({ sortOptions: [{ expr: 'created_at', exprOrder: 'desc', nullOrder: 'last' }] });
+    console.log(resp1);
     expect(_.get(resp1, ['data', 0, 'first_name']) === `achojsTestUser${timestamp1}`).toBe(true);
 
     await process.nextTick(() => {});

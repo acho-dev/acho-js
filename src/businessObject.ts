@@ -23,9 +23,9 @@ export class BusinessObject extends EventEmitter {
       apiToken: achoClientOpt?.apiToken || process.env.ACHO_TOKEN
     };
 
-    if (_.isNil(bizObjOpt?.tableName)) {
-      throw new Error('Missing table name');
-    }
+    // if (_.isNil(bizObjOpt?.tableName)) {
+    //   throw new Error('Missing table name');
+    // }
     this.tableName = bizObjOpt.tableName;
   }
 
@@ -45,7 +45,25 @@ export class BusinessObject extends EventEmitter {
     return reqResp;
   }
 
+  public async listObjects(options: Record<string, any> = {}) {
+    const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
+    const reqConfig: RequestOptions = {
+      method: 'post',
+      path: '/erp/object/list',
+      headers: {},
+      payload: options
+    };
+    const reqResp = await achoClient.request(reqConfig);
+    return reqResp;
+  }
+
   public async createObject(params: Record<string, any> = {}) {
+    if (_.isNil(this.moduleId)) {
+      throw new Error('Missing module ID');
+    }
+    if (_.isNil(this.tableName)) {
+      throw new Error('Missing table name');
+    }
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
     const reqConfig: RequestOptions = {
       method: 'post',
@@ -63,6 +81,9 @@ export class BusinessObject extends EventEmitter {
   }
 
   public async getObject(params: Record<string, any> = {}) {
+    if (_.isNil(this.tableName)) {
+      throw new Error('Missing table name');
+    }
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
     const reqConfig: RequestOptions = {
       method: 'post',
@@ -86,6 +107,10 @@ export class BusinessObject extends EventEmitter {
       sortOptions = [{ expr: 'ctid', exprOrder: 'desc', nullOrder: 'last' }]
     } = params;
 
+    if (_.isNil(this.tableName)) {
+      throw new Error('Missing table name');
+    }
+
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
     const reqConfig: RequestOptions = {
       method: 'post',
@@ -106,6 +131,9 @@ export class BusinessObject extends EventEmitter {
   }
 
   public async addRow(params: Record<string, any> = {}) {
+    if (_.isNil(this.tableName)) {
+      throw new Error('Missing table name');
+    }
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
     const reqConfig: RequestOptions = {
       method: 'post',
@@ -122,6 +150,9 @@ export class BusinessObject extends EventEmitter {
   }
 
   public async updateRow(params: Record<string, any> = {}) {
+    if (_.isNil(this.tableName)) {
+      throw new Error('Missing table name');
+    }
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
     const reqConfig: RequestOptions = {
       method: 'post',
@@ -138,6 +169,9 @@ export class BusinessObject extends EventEmitter {
   }
 
   public async upsertRow(params: Record<string, any> = {}) {
+    if (_.isNil(this.tableName)) {
+      throw new Error('Missing table name');
+    }
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
     const reqConfig: RequestOptions = {
       method: 'post',
@@ -154,6 +188,9 @@ export class BusinessObject extends EventEmitter {
   }
 
   public async deleteRow(params: Record<string, any> = {}) {
+    if (_.isNil(this.tableName)) {
+      throw new Error('Missing table name');
+    }
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
     const reqConfig: RequestOptions = {
       method: 'post',
@@ -170,6 +207,9 @@ export class BusinessObject extends EventEmitter {
   }
 
   public async getIndices(params: Record<string, any> = {}) {
+    if (_.isNil(this.tableName)) {
+      throw new Error('Missing table name');
+    }
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
     const reqConfig: RequestOptions = {
       method: 'post',
@@ -184,6 +224,9 @@ export class BusinessObject extends EventEmitter {
   }
 
   public async setIndices(keys: Array<string> = []) {
+    if (_.isNil(this.tableName)) {
+      throw new Error('Missing table name');
+    }
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
     const reqConfig: RequestOptions = {
       method: 'post',
@@ -199,6 +242,9 @@ export class BusinessObject extends EventEmitter {
   }
 
   public async addIndex(key: string) {
+    if (_.isNil(this.tableName)) {
+      throw new Error('Missing table name');
+    }
     if (_.isNil(key)) {
       throw new Error('Missing key');
     }
@@ -217,6 +263,9 @@ export class BusinessObject extends EventEmitter {
   }
 
   createWriteStream(options: any) {
+    if (_.isNil(this.tableName)) {
+      throw new Error('Missing table name');
+    }
     const client: AchoClient = new AchoClient(this.achoClientOpt);
     const httpRequest: ClientRequest = client.httpRequest({
       method: 'post',

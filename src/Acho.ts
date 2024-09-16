@@ -44,7 +44,7 @@ export default class Acho {
     return new AppUsers(clientOpt);
   }
 
-  public businessObject(bizObjClientOpt: Record<string, any>, achoClientOpt: ClientOptions = this.clientOpt) {
+  public businessObject(bizObjClientOpt: Record<string, any> = {}, achoClientOpt: ClientOptions = this.clientOpt) {
     return new BusinessObject(bizObjClientOpt, achoClientOpt);
   }
 
