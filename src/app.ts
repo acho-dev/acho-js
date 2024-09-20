@@ -58,6 +58,37 @@ export class App {
     return version;
   }
 
+  public async capturePublishedAppElementAsPDF(params: Record<string, any>) {
+    const publishTokenName = `v2_publish_token_${this.appId}`;
+    const payload: {
+      elementId: string;
+      path: string;
+      query: any;
+      values: { [key: string]: any };
+      dimensions: any;
+      footer: boolean;
+    } = {
+      elementId: params.elementId,
+      path: params.path,
+      query: params.query,
+      values: {},
+      dimensions: params.dimensions,
+      footer: params.footer
+    };
+    payload.values[publishTokenName] = {
+      value: `jwt ${this.clientOpt.apiToken}`
+    };
+
+    const result = await this.client.request({
+      method: 'post',
+      headers: {},
+      path: `/apps/${this.appId}/headless/capture/pdf`,
+      payload
+    });
+
+    return result;
+  }
+
   public async discoverServices() {
     const client: AchoClient = new AchoClient(this.clientOpt);
     const services = await client.request({

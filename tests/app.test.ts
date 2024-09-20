@@ -1,5 +1,7 @@
 import { Acho } from '../src/index';
 
+jest.setTimeout(30000);
+
 describe('test App endpoints', () => {
   const AchoInstance = new Acho({
     apiToken: process.env.ACHO_TOKEN,
@@ -34,6 +36,23 @@ describe('test App endpoints', () => {
     const metadata = await appInstance.init();
     const publishedVersion = await appInstance.getPublishedVersion();
     expect(publishedVersion).toBeInstanceOf(Object);
+  });
+
+  it('capture published app element', async () => {
+    const appInstance = AchoInstance.app('95240eba-ec4e-4124-86a1-7403f18e6600');
+    expect(appInstance).toBeInstanceOf(Object);
+    const metadata = await appInstance.init();
+    const result = await appInstance.capturePublishedAppElementAsPDF({
+      elementId: 'elIixzCARp',
+      path: '/home',
+      dimensions: {
+        width: 794,
+        height: 1123
+      },
+      footer: true
+    });
+    console.log(result);
+    expect(result).toBeInstanceOf(Object);
   });
 
   it('discover app services', async () => {
