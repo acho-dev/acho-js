@@ -57,9 +57,13 @@ export class AchoClient {
         if (axios.isAxiosError(error)) {
           if (error.response) {
             throw createHttpError(error.response.status, {
+              message:
+                (error.response?.data as { message: string }).message ||
+                `${JSON.stringify(error.response?.data)}` ||
+                'Unknown Error',
               headers: error.response.headers as any,
               status: error.response.status,
-              data: error.response.data
+              data: error.response?.data
             });
           } else if (error.request) {
             throw createHttpError(400, error.request);
