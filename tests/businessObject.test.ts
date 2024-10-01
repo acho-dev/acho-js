@@ -3,6 +3,8 @@ import _, { last } from 'lodash';
 import { Acho } from '../src/index';
 import { BusinessObject } from '../src/businessObject';
 
+jest.setTimeout(30000);
+
 describe('test BusinessObject endpoints', () => {
   console.log({
     endpoint: process.env.ACHO_API_ENDPOINT,
@@ -40,6 +42,17 @@ describe('test BusinessObject endpoints', () => {
     await process.nextTick(() => {});
     const resp = await bizObjInstance.getData();
     expect(_.isArray(resp?.data)).toBe(true);
+    expect(_.isPlainObject(resp?.meta)).toBe(true);
+  });
+
+  it('get data full', async () => {
+    const bizObjInstance = AchoInstance.businessObject({ tableName: 'default_tztf7h6wsa' });
+    expect(bizObjInstance).toBeInstanceOf(BusinessObject);
+
+    await process.nextTick(() => {});
+    const resp = await bizObjInstance.getData({ pageOptions: { usePagination: false } });
+    expect(_.isArray(resp?.data)).toBe(true);
+    console.log(`resp length: ${resp?.data.length}`);
     expect(_.isPlainObject(resp?.meta)).toBe(true);
   });
 
