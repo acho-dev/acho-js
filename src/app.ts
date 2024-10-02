@@ -67,13 +67,15 @@ export class App {
       values: { [key: string]: any };
       dimensions: any;
       footer: boolean;
+      payload: Record<string, any>;
     } = {
       elementId: params.elementId,
       path: params.path,
       query: params.query,
       values: {},
       dimensions: params.dimensions,
-      footer: params.footer
+      footer: params.footer,
+      payload: params.payload
     };
     payload.values[publishTokenName] = {
       value: `jwt ${this.clientOpt.apiToken}`
