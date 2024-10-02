@@ -206,6 +206,41 @@ export class BusinessObject extends EventEmitter {
     return reqResp;
   }
 
+  public async getRowByAchoID(acho_id: string) {
+    const result = await this.getData({
+      filterOptions: {
+        type: 'logical',
+        operator: 'and',
+        operands: [
+          {
+            type: 'comparison',
+            operator: 'stringEqualTo',
+            leftOperand: '_acho_id',
+            rightOperand: acho_id
+          }
+        ]
+      }
+    });
+
+    if (!result.data) return null;
+
+    return result.data[0];
+  }
+
+  public async updateRowByAchoID(acho_id: string, params: Record<string, any> = {}) {
+    const result = await this.updateRow({ ...params, achoId: acho_id });
+
+    if (!result) {
+      return null;
+    }
+
+    return result[0];
+  }
+
+  public async deleteRowByAchoID(acho_id: string) {
+    return this.deleteRow({ achoId: acho_id });
+  }
+
   public async getIndices(params: Record<string, any> = {}) {
     if (_.isNil(this.tableName)) {
       throw new Error('Missing table name');
