@@ -39,17 +39,20 @@ describe('test App endpoints', () => {
   });
 
   it('capture published app element', async () => {
-    const appInstance = AchoInstance.app('95240eba-ec4e-4124-86a1-7403f18e6600');
+    const appInstance = AchoInstance.app('0b6dcdad-bcdd-4c8e-b888-8d3296d4a1fc');
     expect(appInstance).toBeInstanceOf(Object);
     const metadata = await appInstance.init();
     const result = await appInstance.capturePublishedAppElementAsPDF({
-      elementId: 'elIixzCARp',
+      elementId: 'elNyvmveSJ',
       path: '/home',
       dimensions: {
         width: 794,
         height: 1123
       },
-      footer: true
+      footer: true,
+      payload: {
+        hello: 'world'
+      }
     });
     console.log(result);
     expect(result).toBeInstanceOf(Object);
