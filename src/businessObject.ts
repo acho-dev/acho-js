@@ -102,6 +102,39 @@ export class BusinessObject extends EventEmitter {
     return reqResp;
   }
 
+  public async createMaterializedObject(params: Record<string, any>) {
+    if (_.isNil(this.moduleId)) {
+      throw new Error('Missing module ID');
+    }
+    if (_.isNil(this.tableName)) {
+      throw new Error('Missing table name');
+    }
+    if (_.isNil(params.queryFrom)) {
+      throw new Error('Missing queryForm parameter');
+    }
+    if (_.isNil(params.listenToTables)) {
+      throw new Error('Missing listenToTables parameter');
+    }
+
+    const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
+
+    const reqConfig: RequestOptions = {
+      method: 'post',
+      path: '/erp/object/install',
+      headers: {},
+      payload: {
+        moduleId: this.moduleId,
+        tableName: this.tableName,
+        tableDisplayName: params.tableDisplayName || this.tableName,
+        queryFrom: params.queryFrom,
+        listenToTables: params.listenToTables,
+      }
+    };
+
+    const reqResp = await achoClient.request(reqConfig);
+    return reqResp;
+  }
+
   public async getObject(params: Record<string, any> = {}) {
     if (_.isNil(this.tableName)) {
       throw new Error('Missing table name');
