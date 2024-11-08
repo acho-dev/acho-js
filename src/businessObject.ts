@@ -10,6 +10,12 @@ export interface createBizObjWriteStreamParams {
   maxWaitTime?: number; // in milliseconds
 }
 
+export interface column{
+  name: string;
+  advDataType: string;
+  dataType: string;
+}
+
 export class BusinessObject extends EventEmitter {
   public achoClientOpt: ClientOptions;
   public tableName: string;
@@ -57,6 +63,16 @@ export class BusinessObject extends EventEmitter {
     return reqResp;
   }
 
+  _transformColumns = (columns: Array<column>) => {
+    const tableColumns: Record<string, column> = {};
+
+    for (const _column of columns) {
+      tableColumns[_column.name] = _column;
+    }
+
+    return tableColumns;
+  }
+
   public async createObject(params: Record<string, any> = {}) {
     if (_.isNil(this.moduleId)) {
       throw new Error('Missing module ID');
@@ -65,6 +81,12 @@ export class BusinessObject extends EventEmitter {
       throw new Error('Missing table name');
     }
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
+
+    let tableColumns = params.tableColumns || {};
+    if (Array.isArray(tableColumns)) {
+      tableColumns = this._transformColumns(tableColumns);
+    }
+
     const reqConfig: RequestOptions = {
       method: 'post',
       path: '/erp/object/install',
@@ -72,8 +94,8 @@ export class BusinessObject extends EventEmitter {
       payload: {
         moduleId: this.moduleId,
         tableName: this.tableName,
-        tableDisplayName: this.tableName,
-        tableColumns: {}
+        tableDisplayName: params.tableDisplayName || this.tableName,
+        tableColumns
       }
     };
     const reqResp = await achoClient.request(reqConfig);
