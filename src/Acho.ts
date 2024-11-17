@@ -4,6 +4,7 @@ import { ProjectEndpoints } from './project';
 import { OAuthEndpoints } from './auth';
 import { App } from './app';
 import { BusinessObject } from './businessObject';
+import { EmailService } from './services';
 import { AutomationClient } from './automationClient';
 import { AppUsers } from './appUser';
 import { MediaFile } from './mediaFile';
@@ -16,7 +17,6 @@ import {
   flattenObject,
   streamToBuffer
 } from './utils';
-import { fromPairs } from 'lodash';
 
 const defaultClientOpt = {
   apiToken: process.env.ACHO_TOKEN,
@@ -54,6 +54,10 @@ export default class Acho {
 
   public mediaFile(mediaFileOpt: Record<string, any>, achoClientOpt: ClientOptions = this.clientOpt) {
     return new MediaFile(mediaFileOpt, achoClientOpt);
+  }
+
+  public emailService(achoClientOpt: ClientOptions = this.clientOpt) {
+    return new EmailService(achoClientOpt);
   }
 }
 
