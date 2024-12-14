@@ -17,6 +17,7 @@ export interface RequestOptions {
   headers: Record<string, any>;
   path: string;
   payload?: Record<string, any>;
+  params?: Record<string, any>;
   responseType?: ResponseType;
   axiosSettings?: Record<string, any>;
 }
@@ -31,7 +32,7 @@ export class AchoClient {
     this.authHeader = { Authorization: `jwt ${clientOpt.apiToken || process.env.ACHO_TOKEN}` };
   }
   async request(options: RequestOptions) {
-    const { method, headers, path, payload, responseType, axiosSettings } = options;
+    const { method, headers, path, payload, params, responseType, axiosSettings } = options;
     try {
       const url = this.baseUrl + path;
       const config = {
@@ -42,6 +43,7 @@ export class AchoClient {
           ...headers,
           ...this.authHeader
         },
+        params,
         data: payload
       };
       if (axiosSettings) {
