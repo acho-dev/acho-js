@@ -4,7 +4,7 @@ import { ProjectEndpoints } from './project';
 import { OAuthEndpoints } from './auth';
 import { App } from './app';
 import { BusinessObject } from './businessObject';
-import { EmailService } from './services';
+import { EmailService, EventSchedulingService } from './services';
 import { AutomationClient } from './automationClient';
 import { AppUsers } from './appUser';
 import { MediaFile } from './mediaFile';
@@ -58,6 +58,10 @@ export default class Acho {
 
   public emailService(achoClientOpt: ClientOptions = this.clientOpt) {
     return new EmailService(achoClientOpt);
+  }
+
+  public eventSchedulingService(achoClientOpt: ClientOptions = this.clientOpt) {
+    return new EventSchedulingService(achoClientOpt);
   }
 }
 
