@@ -10,7 +10,7 @@ export interface createBizObjWriteStreamParams {
   maxWaitTime?: number; // in milliseconds
 }
 
-export interface column{
+export interface column {
   name: string;
   advDataType: string;
   dataType: string;
@@ -71,7 +71,7 @@ export class BusinessObject extends EventEmitter {
     }
 
     return tableColumns;
-  }
+  };
 
   public async createObject(params: Record<string, any> = {}) {
     if (_.isNil(this.moduleId)) {
@@ -127,7 +127,7 @@ export class BusinessObject extends EventEmitter {
         tableName: this.tableName,
         tableDisplayName: params.tableDisplayName || this.tableName,
         queryFrom: params.queryFrom,
-        listenToTables: params.listenToTables,
+        listenToTables: params.listenToTables
       }
     };
 
@@ -189,19 +189,49 @@ export class BusinessObject extends EventEmitter {
     if (_.isNil(this.tableName)) {
       throw new Error('Missing table name');
     }
+
+    if (_.isNil(params.rows) && _.isNil(params.row)) {
+      throw new Error('Missing rows or row parameter');
+    }
+
+    if (params.rows) {
+      return this._addRows(params.rows);
+    } else {
+      return this._addRow(params.row);
+    }
+  }
+
+  private async _addRow(row: Record<string, any> = {}) {
     const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
     const reqConfig: RequestOptions = {
       method: 'post',
       path: '/erp/object/rows/add',
       headers: {},
       payload: {
-        ...params,
+        rows: [row],
         tableName: this.tableName
       }
     };
-    const reqResp = await achoClient.request(reqConfig);
+    const addRows = await achoClient.request(reqConfig);
 
-    return reqResp;
+    return addRows[0];
+  }
+
+  private async _addRows(rows: Array<Record<string, any>> = []) {
+    const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
+
+    const reqConfig: RequestOptions = {
+      method: 'post',
+      path: '/erp/object/rows/add',
+      headers: {},
+      payload: {
+        rows,
+        tableName: this.tableName
+      }
+    };
+    const addRows = await achoClient.request(reqConfig);
+
+    return addRows;
   }
 
   public async updateRow(params: Record<string, any> = {}) {
