@@ -185,6 +185,24 @@ export class BusinessObject extends EventEmitter {
     return reqResp;
   }
 
+  public async truncateData() {
+    if (_.isNil(this.tableName)) {
+      throw new Error('Missing table name');
+    }
+
+    const achoClient: AchoClient = new AchoClient(this.achoClientOpt);
+    const reqConfig: RequestOptions = {
+      method: 'post',
+      path: '/erp/object/data/truncate',
+      headers: {},
+      payload: {
+        tableName: this.tableName
+      }
+    };
+    const reqResp = await achoClient.request(reqConfig);
+    return reqResp;
+  }
+
   public async addRow(params: Record<string, any> = {}) {
     if (_.isNil(this.tableName)) {
       throw new Error('Missing table name');
